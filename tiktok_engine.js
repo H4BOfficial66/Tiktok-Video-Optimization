@@ -142,6 +142,21 @@
     return [null, null];
   }
 
+  // Audio track tabhi use hota hai jab uske saare zaroori boxes maujood hon.
+  function audioTrackUsable(data, atPos, atSize) {
+    const s = atPos + 8, e = atPos + atSize;
+    const [stbl, stblSize] = findBoxPath(data, ['mdia', 'minf', 'stbl'], s, e);
+    if (stbl === null) return false;
+    const bs = stbl + 8, be = stbl + stblSize;
+    const hasOffsets = findBox(data, 'stco', bs, be)[0] !== null || findBox(data, 'co64', bs, be)[0] !== null;
+    return hasOffsets &&
+      ['stsz', 'stsc', 'stts', 'stsd'].every((t) => findBox(data, t, bs, be)[0] !== null) &&
+      findBox(data, 'tkhd', s, e)[0] !== null &&
+      findBoxPath(data, ['mdia', 'mdhd'], s, e)[0] !== null &&
+      findBoxPath(data, ['mdia', 'minf', 'smhd'], s, e)[0] !== null &&
+      findBoxPath(data, ['mdia', 'minf', 'dinf'], s, e)[0] !== null;
+  }
+
   function parseStts(data, offset) {
     const entryCount = readU32(data, offset + 12);
     const entries = [];
@@ -396,17 +411,23 @@
    * Transforms an MP4 video container according to TikTok quality optimization rules.
    * @param {Uint8Array|ArrayBuffer} inputData - MP4 file buffer.
    * @param {Object} [options]
-   * @param {number} [options.multiplier=1] - Multiplier. 1 = Safe mode (exact duration, no shadowban). >1 = Frame inflation.
-   * @param {string} [options.comment=''] - Metadata comment tag (default empty to avoid moderation flags).
+   * @param {number} [options.multiplier=10] - Integer 1..50. 1 = no ghost frames (exact frame count). >1 = ghost-frame inflation (declared frames x multiplier).
+   * @param {string} [options.comment='TK8vY5VqBA6hUlo1yuGvNA'] - Metadata comment tag (max 64 chars). Pass '' to write no tag.
    * @param {function} [options.onProgress] - Optional progress callback: (percent: number, step: string) => void.
    * @returns {{ output: Uint8Array, stats: Object }}
    */
   function transformMp4(inputData, options = {}) {
     const data = inputData instanceof Uint8Array ? inputData : new Uint8Array(inputData);
-    const multiplier = Math.max(1, Math.min(50, options.multiplier !== undefined ? options.multiplier : 10));
-    const comment = (options.comment !== undefined ? options.comment : 'TK8vY5VqBA6hUlo1yuGvNA').slice(0, 64);
+    const rawMultiplier = options.multiplier !== undefined ? Number(options.multiplier) : 10;
+    const multiplier = Number.isFinite(rawMultiplier) ? Math.max(1, Math.min(50, Math.floor(rawMultiplier))) : 1;
+    const comment = String(options.comment !== undefined && options.comment !== null ? options.comment : 'TK8vY5VqBA6hUlo1yuGvNA').slice(0, 64);
     const onProgress = options.onProgress || (() => {});
     const fileSize = data.length;
+    const assertV0 = (pos, name) => {
+      if (pos === null || data[pos + 8] !== 0) {
+        throw new Error('Unsupported MP4: ' + name + ' box is missing or uses 64-bit (version 1) fields.');
+      }
+    };
 
     onProgress(10, 'Scanning MP4 boxes...');
     const [moovPos, moovSize] = findBox(data, 'moov');
@@ -414,6 +435,11 @@
     if (moovPos === null || mdatPos === null) {
       throw new Error('Unsupported file: missing moov or mdat box. File must be a standard MP4.');
     }
+
+    // NOTE: neeche jin variables ke naam '...Ms' hain wo asal mein movie-timescale units mein hain.
+    const [mvhdPos0] = findBox(data, 'mvhd', moovPos + 8, moovPos + moovSize);
+    assertV0(mvhdPos0, 'mvhd');
+    const mvTimescale = readU32(data, mvhdPos0 + 20) || 1000; // iPhone = 600, ffmpeg/Android = 1000
 
     const mdatDataStart = mdatPos + 8;
 
@@ -426,6 +452,7 @@
 
     const vtStart = vtPos + 8;
     const vtEnd = vtPos + vtSize;
+    assertV0(findBox(data, 'tkhd', vtStart, vtEnd)[0], 'video tkhd');
     const [stblPos, stblSize] = findBoxPath(data, ['mdia', 'minf', 'stbl'], vtStart, vtEnd);
     if (stblPos === null) {
       throw new Error('Invalid MP4 structure: missing video sample table (stbl).');
@@ -447,6 +474,18 @@
       throw new Error('Invalid MP4: missing critical sample tables in video track.');
     }
 
+    // Codec guard: sirf H.264/AVC (avcC) aur 4-byte NAL length support hai.
+    {
+      const stsdBody = data.subarray(stsdPos + 8, stsdPos + stsdSize);
+      const avcCIdx = findSubarray(stsdBody, strToBytes('avcC'));
+      if (avcCIdx < 4) {
+        throw new Error('Unsupported video codec: only H.264/AVC (avcC) is supported. HEVC/H.265, AV1 and VP9 are not.');
+      }
+      if ((stsdBody[avcCIdx + 8] & 0x03) !== 3) {
+        throw new Error('Unsupported H.264 stream: only 4-byte NAL length prefixes are supported.');
+      }
+    }
+
     const videoChunks = stcoPos !== null ? parseStco(data, stcoPos) : parseCo64(data, co64Pos);
     const videoSizes = parseStsz(data, stszPos);
     const videoStsc = parseStsc(data, stscPos);
@@ -465,6 +504,7 @@
     if (vMdhdPos === null) {
       throw new Error('Invalid MP4: missing video media header (mdhd).');
     }
+    assertV0(vMdhdPos, 'video mdhd');
     const vTimescale = readU32(data, vMdhdPos + 20);
     const vDuration = readU32(data, vMdhdPos + 24);
     const vDurationSec = vTimescale > 0 ? (vDuration / vTimescale) : 0;
@@ -483,7 +523,11 @@
     onProgress(45, 'Checking audio track...');
     const sounBytes = strToBytes('soun');
     const [atPos, atSize] = findTrackByHandler(data, moovPos, moovSize, sounBytes);
-    const hasAudio = atPos !== null;
+    let hasAudio = atPos !== null && audioTrackUsable(data, atPos, atSize);
+    if (hasAudio) {
+      assertV0(findBox(data, 'tkhd', atPos + 8, atPos + atSize)[0], 'audio tkhd');
+      assertV0(findBoxPath(data, ['mdia', 'mdhd'], atPos + 8, atPos + atSize)[0], 'audio mdhd');
+    }
 
     let audioChunks = [], audioSizes = [], audioStts = [];
     let aTimescale = 0, newAudioDur = 0, newAudioDurMs = 0;
@@ -509,13 +553,9 @@
       [aSgpdPos, aSgpdSize] = findBox(data, 'sgpd', aSbStart, aSbEnd);
       [aSbgpPos, aSbgpSize] = findBox(data, 'sbgp', aSbStart, aSbEnd);
 
-      if ((aStcoPos === null && aCo64Pos === null) || !aStszPos || !aSttsPos || !aStsdPos) {
-        hasAudio = false;
-      } else {
-        audioChunks = aStcoPos !== null ? parseStco(data, aStcoPos) : parseCo64(data, aCo64Pos);
-        audioSizes = parseStsz(data, aStszPos);
-        audioStts = parseStts(data, aSttsPos);
-      }
+      audioChunks = aStcoPos !== null ? parseStco(data, aStcoPos) : parseCo64(data, aCo64Pos);
+      audioSizes = parseStsz(data, aStszPos);
+      audioStts = parseStts(data, aSttsPos);
 
       [aMdhdPos, aMdhdSize] = findBoxPath(data, ['mdia', 'mdhd'], atStart, atEnd);
       aTimescale = readU32(data, aMdhdPos + 20);
@@ -531,9 +571,9 @@
         newAudioDurMs = aElstSegDur;
       } else {
         const aMdhdDur = readU32(data, aMdhdPos + 24);
-        newAudioDurMs = aTimescale > 0 ? Math.floor((aMdhdDur * 1000) / aTimescale) : 0;
+        newAudioDurMs = aTimescale > 0 ? Math.floor((aMdhdDur * mvTimescale) / aTimescale) : 0;
       }
-      newAudioDur = aTimescale > 0 ? Math.floor((newAudioDurMs * aTimescale) / 1000) : 0;
+      newAudioDur = aTimescale > 0 ? Math.floor((newAudioDurMs * aTimescale) / mvTimescale) : 0;
 
       const aDelta = audioStts.length ? audioStts[0][1] : 1024;
       const aCount = audioSizes.length;
@@ -546,7 +586,7 @@
       } else {
         newAStts = audioStts;
         newAudioDur = readU32(data, aMdhdPos + 24);
-        newAudioDurMs = aTimescale > 0 ? Math.floor((newAudioDur * 1000) / aTimescale) : 0;
+        newAudioDurMs = aTimescale > 0 ? Math.floor((newAudioDur * mvTimescale) / aTimescale) : 0;
       }
 
       let totalABytes = 0;
@@ -731,7 +771,7 @@
     const moovSizeFinal = moov.length;
 
     onProgress(88, 'Calculating fast-start sample chunk offsets...');
-    const newMdatStart = 32 + 8 + moovSizeFinal + 8;
+    const newMdatStart = ftyp.length + free.length + moovSizeFinal + 8;
     const firstVideoRel = firstOff - mdatDataStart;
     const padAbs = newMdatStart + newMdatContent.length - PADDING_SIZE;
 

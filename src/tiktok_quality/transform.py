@@ -54,6 +54,11 @@ def transform(input_path: str, output_path: str, multiplier: int = 10,
     if moov_pos is None or mdat_pos is None:
         raise ValueError("Unsupported file: missing moov or mdat box. Use a standard H.264 MP4.")
 
+    mvhd_pos, mvhd_size = find_box(data, 'mvhd', moov_pos + 8, moov_pos + moov_size)
+    mv_timescale = read_u32(data, mvhd_pos + 20) if mvhd_pos is not None else 1000
+    if mv_timescale == 0:
+        mv_timescale = 1000
+
     mdat_data_start = mdat_pos + 8
 
     # Video track
@@ -162,8 +167,8 @@ def transform(input_path: str, output_path: str, multiplier: int = 10,
             new_audio_dur_ms = a_elst_seg_dur
         else:
             a_mdhd_dur = read_u32(data, a_mdhd_pos + 24)
-            new_audio_dur_ms = (a_mdhd_dur * 1000 // a_timescale) if a_timescale > 0 else 0
-        new_audio_dur = (new_audio_dur_ms * a_timescale // 1000) if a_timescale > 0 else 0
+            new_audio_dur_ms = (a_mdhd_dur * mv_timescale // a_timescale) if a_timescale > 0 else 0
+        new_audio_dur = (new_audio_dur_ms * a_timescale // mv_timescale) if a_timescale > 0 else 0
 
         # STTS: align to mdhd + media_time
         a_delta = audio_stts[0][1] if audio_stts else 1024
@@ -177,7 +182,7 @@ def transform(input_path: str, output_path: str, multiplier: int = 10,
         else:
             new_a_stts = audio_stts
             new_audio_dur = read_u32(data, a_mdhd_pos + 24)
-            new_audio_dur_ms = (new_audio_dur * 1000 // a_timescale) if a_timescale > 0 else 0
+            new_audio_dur_ms = (new_audio_dur * mv_timescale // a_timescale) if a_timescale > 0 else 0
 
         # Bitrates
         total_a_bytes = sum(audio_sizes)
@@ -338,7 +343,7 @@ def transform(input_path: str, output_path: str, multiplier: int = 10,
     moov_size_final = len(moov)
 
     # Fill STCO offsets
-    new_mdat_start = 32 + 8 + moov_size_final + 8
+    new_mdat_start = len(ftyp) + len(free) + moov_size_final + 8
     first_video_rel = first_off - mdat_data_start
     pad_abs = new_mdat_start + len(new_mdat_content) - PADDING_SIZE
 
