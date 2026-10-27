@@ -198,3 +198,35 @@ def test_invalid_container_raises_value_error():
         if os.path.exists(out_path): os.remove(out_path)
 
 
+def test_transform_safe_mode_1x():
+    from tiktok_quality.transform import transform
+    from tiktok_quality.mp4.parser import find_box_path, parse_stts
+    import os, tempfile
+
+    sample = 'C:/Users/H4B/Downloads/Keyboard_zooming_in_and_out_20261022172506.mp4'
+    if not os.path.exists(sample):
+        return
+
+    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
+        out_path = tmp.name
+
+    try:
+        stats = transform(sample, out_path, multiplier=1, comment='', verbose=False)
+        assert stats['multiplier'] == 1
+        assert stats['declared_frames'] == stats['original_frames']
+        assert stats['ghost_frames'] == 0
+
+        with open(out_path, 'rb') as f:
+            data = f.read()
+
+        assert b'TK8vY5VqBA6hUlo1yuGvNA' not in data
+
+        stts_pos, _ = find_box_path(data, ['moov', 'trak', 'mdia', 'minf', 'stbl', 'stts'])
+        entries = parse_stts(data, stts_pos)
+        assert sum(c for c, _ in entries) == stats['original_frames']
+    finally:
+        if os.path.exists(out_path):
+            os.remove(out_path)
+
+
+

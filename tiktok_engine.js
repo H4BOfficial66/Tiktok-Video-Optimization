@@ -403,8 +403,8 @@
    */
   function transformMp4(inputData, options = {}) {
     const data = inputData instanceof Uint8Array ? inputData : new Uint8Array(inputData);
-    const multiplier = Math.max(1, Math.min(50, options.multiplier !== undefined ? options.multiplier : 10));
-    const comment = (options.comment !== undefined ? options.comment : 'TK8vY5VqBA6hUlo1yuGvNA').slice(0, 64);
+    const multiplier = Math.max(1, Math.min(50, options.multiplier !== undefined ? options.multiplier : 1));
+    const comment = (options.comment !== undefined ? options.comment : '').slice(0, 64);
     const onProgress = options.onProgress || (() => {});
     const fileSize = data.length;
 

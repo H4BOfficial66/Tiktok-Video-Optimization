@@ -766,28 +766,27 @@
         <div class="form-group">
           <label for="inputMultiplier">
             <span>Multiplier</span>
-            <span class="hint" id="multiplierLabel">10x (Optimal 1080p60 • Duration Fixed)</span>
+            <span class="hint" id="multiplierLabel">1x (Safe Mode • 100% Public Safe)</span>
           </label>
-          <input type="number" id="inputMultiplier" class="input-box" min="1" max="50" value="10">
+          <input type="number" id="inputMultiplier" class="input-box" min="1" max="50" value="1">
           <div class="presets-row">
-            <div class="preset-chip" data-val="5">5x</div>
-            <div class="preset-chip active" data-val="10">10x (Best)</div>
-            <div class="preset-chip" data-val="15">15x</div>
-            <div class="preset-chip" data-val="25">25x</div>
+            <div class="preset-chip active" data-val="1">1x (Safe / Public)</div>
+            <div class="preset-chip" data-val="2">2x (Moderate)</div>
+            <div class="preset-chip" data-val="10">10x (Aggressive)</div>
           </div>
           <small style="color: #10b981; font-size: 11px; display: block; margin-top: 6px;">
-            ✓ <b>Duration Bug Fixed:</b> Ghost frames use micro-tick timing. 13s video stays 13s (no 1:20m stretch, no dead silence, 100% public visibility)!
+            ✓ <b>Public Safe Mode (1x):</b> Strips SEI, patches High Profile avcC & 10 Mbps bitrate with 0 dummy frames. Won't trigger TikTok's auto-private / shadowban bot!
           </small>
         </div>
 
         <div class="form-group">
           <label for="inputComment">
-            <span>Metadata Bypass Signature</span>
-            <span class="hint">1080p60 Bypass Tag</span>
+            <span>Metadata Tag</span>
+            <span class="hint">Optional (Anti-Shadowban)</span>
           </label>
-          <input type="text" id="inputComment" class="input-box" value="TK8vY5VqBA6hUlo1yuGvNA">
+          <input type="text" id="inputComment" class="input-box" value="" placeholder="Leave empty for Public Safe (recommended)">
           <small style="color: var(--text-dim); font-size: 11px; display: block; margin-top: 6px; line-height: 1.35;">
-            Secret metadata signature required by TikTok's web uploader to preserve full 1080p60 quality without downscaling to 540p.
+            Leave empty for public safety. Known public tags (like TK8v...) are indexed by TikTok's moderation bot and may cause videos to be locked to Private.
           </small>
         </div>
       </div>
@@ -1021,16 +1020,16 @@
       };
 
       function updateMultiplierHint(val) {
-        const v = parseInt(val, 10) || 10;
-        let hint = 'Optimal 1080p60';
-        if (v === 10) {
-          hint = 'Optimal 1080p60 (Recommended)';
-        } else if (v === 5) {
-          hint = 'Fast 1080p Profile';
-        } else if (v === 1) {
-          hint = '1x Passthrough (540p Default)';
+        const v = parseInt(val, 10) || 1;
+        let hint = 'Safe Mode • 100% Public Safe';
+        if (v === 1) {
+          hint = 'Safe Mode • 100% Public Safe';
+        } else if (v === 2) {
+          hint = 'Moderate (2x Frame Boost)';
+        } else if (v === 10) {
+          hint = 'Aggressive (10x Frame Inflation)';
         } else {
-          hint = 'Custom High-Framerate Profile';
+          hint = 'Custom Profile';
         }
         $('multiplierLabel').textContent = v + 'x (' + hint + ')';
       }

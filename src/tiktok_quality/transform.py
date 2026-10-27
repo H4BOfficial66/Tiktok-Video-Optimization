@@ -23,10 +23,10 @@ KEEP_NALU_TYPES = {1, 5, 7, 8}  # non-IDR slice, IDR slice, SPS, PPS
 
 # ISO 639-2/T packed 'und'
 LANG_UND = 0x55c4
-DEFAULT_COMMENT = 'TK8vY5VqBA6hUlo1yuGvNA'
+DEFAULT_COMMENT = ''
 
 
-def transform(input_path: str, output_path: str, multiplier: int = 10,
+def transform(input_path: str, output_path: str, multiplier: int = 1,
               comment: str = DEFAULT_COMMENT, verbose: bool = True) -> dict:
     """
     Apply the TikTok Video Optimizer container transformation pipeline.

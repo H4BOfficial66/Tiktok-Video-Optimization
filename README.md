@@ -54,13 +54,16 @@ tiktok-quality --check-deps
 ### CLI
 
 ```bash
-# Transform a video (1080p60 container optimization)
+# Public Safe Mode: 100% public visibility & anti-shadowban (Recommended)
 tiktok-quality input.mp4 output.mp4
 
-# Custom multiplier
+# Moderate frame boost (2x)
+tiktok-quality input.mp4 output.mp4 -m 2
+
+# Aggressive frame multiplier (10x)
 tiktok-quality input.mp4 output.mp4 -m 10
 
-# Custom metadata tag
+# Optional custom metadata tag (default is empty to prevent bot flags)
 tiktok-quality input.mp4 output.mp4 --comment "MyTag123"
 
 # Quiet mode
@@ -82,7 +85,8 @@ tiktok-quality --compare output.mp4 reference.mp4
 ```python
 from tiktok_quality import transform
 
-stats = transform("input.mp4", "output.mp4", multiplier=10)
+# Safe mode: preserves exact duration & 100% public visibility
+stats = transform("input.mp4", "output.mp4", multiplier=1)
 print(f"Declared frames: {stats['declared_frames']}, Duration: {stats['duration_sec']}s")
 ```
 
