@@ -863,10 +863,206 @@
     };
   }
 
+  /**
+   * 7-u8 Smoothness Trick (Community 120 FPS / 60 FPS timescale patch method)
+   * Modifies mvhd and mdhd timescale & duration by scale = targetFps / sourceFps.
+   * Keeps the playback duration in seconds 100% EXACT (13s stays 13s, 0% stretch, 0 frozen frames).
+   * TikTok's transcoder keeps all 60 frames intact without downscaling to 540p or auto-privating!
+   */
+  function patchFps(data, options = {}) {
+    const onProgress = options.onProgress || (() => {});
+    onProgress(10, 'Scanning MP4 structure...');
+
+    const [moovPos, moovSize] = findBox(data, 'moov');
+    if (moovPos === null) {
+      throw new Error("Invalid MP4: No 'moov' box found.");
+    }
+    const [mvhdPos, mvhdSize] = findBox(data, 'mvhd', moovPos + 8, moovPos + moovSize);
+    if (mvhdPos === null) {
+      throw new Error("Invalid MP4: No 'mvhd' box found inside 'moov'.");
+    }
+
+    // Determine mvhd version, timescale, and duration offsets
+    const mvhdBody = mvhdPos + 8;
+    const mvhdVer = data[mvhdBody];
+    let mvTsOff, mvDurOff, mvDurLen;
+    if (mvhdVer === 0) {
+      mvTsOff = mvhdBody + 12;
+      mvDurOff = mvhdBody + 16;
+      mvDurLen = 4;
+    } else if (mvhdVer === 1) {
+      mvTsOff = mvhdBody + 20;
+      mvDurOff = mvhdBody + 24;
+      mvDurLen = 8;
+    } else {
+      throw new Error(`Unsupported mvhd version: ${mvhdVer}`);
+    }
+
+    const oldMvTs = readU32(data, mvTsOff);
+    const oldMvDur = mvDurLen === 4 ? readU32(data, mvDurOff) : Number((BigInt(readU32(data, mvDurOff)) << 32n) | BigInt(readU32(data, mvDurOff + 4)));
+
+    // Locate video track to detect source FPS and duration
+    onProgress(25, 'Detecting frame rate & track timings...');
+    const [vtPos, vtSize] = findTrackByHandler(data, moovPos, moovSize, strToBytes('vide'));
+    if (vtPos === null) {
+      throw new Error("No video track found with handler 'vide'.");
+    }
+
+    const [vMdhdPos, vMdhdSize] = findBoxPath(data, ['mdia', 'mdhd'], vtPos + 8, vtPos + vtSize);
+    if (vMdhdPos === null) {
+      throw new Error("Missing video 'mdhd' box.");
+    }
+    const vMdhdBody = vMdhdPos + 8;
+    const vMdhdVer = data[vMdhdBody];
+    let vTsOff, vDurOff, vDurLen;
+    if (vMdhdVer === 0) {
+      vTsOff = vMdhdBody + 12;
+      vDurOff = vMdhdBody + 16;
+      vDurLen = 4;
+    } else if (vMdhdVer === 1) {
+      vTsOff = vMdhdBody + 20;
+      vDurOff = vMdhdBody + 24;
+      vDurLen = 8;
+    } else {
+      throw new Error(`Unsupported video mdhd version: ${vMdhdVer}`);
+    }
+
+    const oldVTs = readU32(data, vTsOff);
+    const oldVDur = vDurLen === 4 ? readU32(data, vDurOff) : Number((BigInt(readU32(data, vDurOff)) << 32n) | BigInt(readU32(data, vDurOff + 4)));
+    const vDurationSec = oldVTs > 0 ? (oldVDur / oldVTs) : (oldMvTs > 0 ? oldMvDur / oldMvTs : 0);
+
+    // Calculate source FPS from STTS if not supplied
+    let detectedFps = null;
+    let sampleCount = 0;
+    const [stblPos, stblSize] = findBoxPath(data, ['mdia', 'minf', 'stbl'], vtPos + 8, vtPos + vtSize);
+    if (stblPos !== null) {
+      const [sttsPos] = findBox(data, 'stts', stblPos + 8, stblPos + stblSize);
+      if (sttsPos !== null) {
+        const entryCount = readU32(data, sttsPos + 12);
+        let totalTicks = 0;
+        for (let i = 0; i < entryCount; i++) {
+          const c = readU32(data, sttsPos + 16 + i * 8);
+          const d = readU32(data, sttsPos + 20 + i * 8);
+          sampleCount += c;
+          totalTicks += c * d;
+        }
+        if (totalTicks > 0 && oldVTs > 0) {
+          detectedFps = (sampleCount * oldVTs) / totalTicks;
+        }
+      }
+    }
+
+    let sourceFps = options.fpsIn || detectedFps || 60.0;
+    let targetFps = options.fpsOut || 30.0;
+    const mode = options.mode || 'method';
+    const includeAudio = options.includeAudio !== false;
+
+    const scale = targetFps / sourceFps;
+    onProgress(50, `Applying timescale patch (${sourceFps.toFixed(2)} -> ${targetFps} FPS, scale ${scale.toFixed(4)})...`);
+
+    // Create patched copy
+    const output = new Uint8Array(data.length);
+    output.set(data);
+
+    // Patch MVHD
+    const newMvTs = Math.max(1, Math.round(oldMvTs * scale));
+    writeU32(output, mvTsOff, newMvTs);
+    if (mode === 'method') {
+      const newMvDur = Math.max(0, Math.round(oldMvDur * scale));
+      if (mvDurLen === 4) {
+        writeU32(output, mvDurOff, newMvDur);
+      } else {
+        const bi = BigInt(newMvDur);
+        writeU32(output, mvDurOff, Number(bi >> 32n));
+        writeU32(output, mvDurOff + 4, Number(bi & 0xffffffffn));
+      }
+    }
+
+    // Find all trak boxes and patch mdhd
+    let pos = moovPos + 8;
+    const moovEnd = moovPos + moovSize;
+    let patchedTracks = 0;
+
+    while (pos + 8 <= moovEnd) {
+      const trakSize = readU32(data, pos);
+      const btype = bytesToStr(data, pos + 4, 4);
+      if (trakSize < 8) break;
+
+      if (btype === 'trak') {
+        const [hdlrPos] = findBoxPath(data, ['mdia', 'hdlr'], pos + 8, pos + trakSize);
+        let handler = '????';
+        if (hdlrPos !== null) {
+          handler = bytesToStr(data, hdlrPos + 16, 4);
+        }
+
+        const isVideo = handler === 'vide';
+        const isAudio = handler === 'soun';
+
+        if (isVideo || (isAudio && includeAudio)) {
+          const [mdhdPos] = findBoxPath(data, ['mdia', 'mdhd'], pos + 8, pos + trakSize);
+          if (mdhdPos !== null) {
+            const mBody = mdhdPos + 8;
+            const mVer = data[mBody];
+            let tsO, durO, durL;
+            if (mVer === 0) {
+              tsO = mBody + 12;
+              durO = mBody + 16;
+              durL = 4;
+            } else if (mVer === 1) {
+              tsO = mBody + 20;
+              durO = mBody + 24;
+              durL = 8;
+            }
+            if (tsO) {
+              const oldTs = readU32(data, tsO);
+              const oldDur = durL === 4 ? readU32(data, durO) : Number((BigInt(readU32(data, durO)) << 32n) | BigInt(readU32(data, durO + 4)));
+              const newTs = Math.max(1, Math.round(oldTs * scale));
+              writeU32(output, tsO, newTs);
+
+              if (mode === 'method') {
+                const newDur = Math.max(0, Math.round(oldDur * scale));
+                if (durL === 4) {
+                  writeU32(output, durO, newDur);
+                } else {
+                  const bi = BigInt(newDur);
+                  writeU32(output, durO, Number(bi >> 32n));
+                  writeU32(output, durO + 4, Number(bi & 0xffffffffn));
+                }
+              }
+              patchedTracks++;
+            }
+          }
+        }
+      }
+      pos += trakSize;
+    }
+
+    onProgress(100, '7-u8 Smoothness patch complete!');
+
+    return {
+      output,
+      stats: {
+        input_size: data.length,
+        output_size: output.length,
+        size_delta: 0,
+        original_frames: sampleCount,
+        declared_frames: sampleCount,
+        ghost_frames: 0,
+        multiplier: 1,
+        source_fps: Number(sourceFps.toFixed(2)),
+        target_fps: Number(targetFps.toFixed(2)),
+        scale: Number(scale.toFixed(4)),
+        duration_sec: Number(vDurationSec.toFixed(2)),
+        tracks_patched: patchedTracks,
+        mode: mode
+      }
+    };
+  }
+
   // Export to window / worker or CommonJS
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { transformMp4 };
+    module.exports = { transformMp4, patchFps };
   } else if (typeof global !== 'undefined') {
-    global.TikTokQuality = { transformMp4 };
+    global.TikTokQuality = { transformMp4, patchFps };
   }
 })(typeof self !== 'undefined' ? self : this);

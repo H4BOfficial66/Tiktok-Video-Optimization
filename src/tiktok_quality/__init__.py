@@ -16,8 +16,17 @@ Usage::
     )
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
+from .fps_patch import detect_fps, exact_fps, patch_fps, patch_fps_bytes
+from .linkcheck import check_tiktok
 from .transform import transform
 
-__all__ = ["transform"]
+__all__ = [
+    "transform",
+    "patch_fps",
+    "patch_fps_bytes",
+    "detect_fps",
+    "exact_fps",
+    "check_tiktok",
+]

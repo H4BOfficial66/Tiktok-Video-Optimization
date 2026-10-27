@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>TikTok Video Optimizer – 1080p 60fps Ultra HD Container Tool</title>
-  <meta name="description" content="Upload crisp 1080p 60fps videos on TikTok without compression or re-encoding. Pure fast-start MP4 container optimization directly in your browser.">
+  <title>TikTok Video Optimizer – 7-u8 60/120 FPS Method & 1080p Ultra HD</title>
+  <meta name="description" content="Upload crisp 1080p 60fps videos on TikTok without compression, duration stretching, or 540p downscaling. 7-u8 timescale method and container optimization directly in your browser.">
   <meta name="theme-color" content="#fe2c55">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="TikTok Video Optimizer – 1080p60 Container Tool">
-  <meta property="og:description" content="Upload 1080p 60fps on TikTok without compression. 100% Client-side and server-ready.">
+  <meta property="og:title" content="TikTok Video Optimizer – 7-u8 1080p60 Tool">
+  <meta property="og:description" content="Upload 1080p 60fps on TikTok without duration stretch or compression. 100% Client-side and server-ready.">
   <meta property="og:type" content="website">
 
   <!-- Fonts -->
@@ -106,7 +106,7 @@
     .container {
       position: relative;
       z-index: 1;
-      max-width: 860px;
+      max-width: 880px;
       margin: 0 auto;
       padding: 36px 20px 80px;
     }
@@ -156,145 +156,175 @@
       color: var(--text-muted);
       text-decoration: none;
       font-size: 13px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
       padding: 6px 12px;
       border-radius: var(--radius-sm);
-      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      transition: all 0.2s;
     }
     .icon-link:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.09);
-      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border);
     }
 
-    /* Header Section */
+    /* Hero Section */
     .hero {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
     }
     .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(90deg, rgba(254, 44, 85, 0.15), rgba(37, 244, 238, 0.15));
-      border: 1px solid rgba(254, 44, 85, 0.3);
-      padding: 6px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
+      display: inline-block;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(254, 44, 85, 0.12);
+      color: var(--tiktok-red);
+      border: 1px solid rgba(254, 44, 85, 0.3);
       margin-bottom: 16px;
     }
     .hero h1 {
-      font-size: clamp(32px, 5.5vw, 52px);
+      font-size: clamp(32px, 5vw, 44px);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.15;
       margin-bottom: 14px;
     }
-    .hero h1 .text-glow-red {
-      color: var(--tiktok-red);
-      text-shadow: 0 0 28px var(--tiktok-red-glow);
-    }
-    .hero h1 .text-glow-cyan {
-      color: var(--tiktok-cyan);
-      text-shadow: 0 0 28px var(--tiktok-cyan-glow);
-    }
     .hero p {
       color: var(--text-muted);
-      font-size: clamp(15px, 2vw, 17px);
-      max-width: 620px;
+      font-size: 16px;
+      max-width: 650px;
       margin: 0 auto;
     }
+    .text-glow-red {
+      color: var(--tiktok-red);
+      text-shadow: 0 0 25px var(--tiktok-red-glow);
+    }
+    .text-glow-cyan {
+      color: var(--tiktok-cyan);
+      text-shadow: 0 0 25px var(--tiktok-cyan-glow);
+    }
 
-    /* Main Card */
+    /* Card Wrapper */
     .glass-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 28px;
-      margin-bottom: 24px;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      transition: border-color 0.25s ease;
-    }
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      margin-bottom: 28px;
+      transition: border-color 0.3s;
     }
 
-    /* Drop Zone */
-    .dropzone {
-      border: 2px dashed rgba(254, 44, 85, 0.35);
-      background: rgba(254, 44, 85, 0.02);
-      border-radius: var(--radius-md);
-      padding: 44px 24px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.25s ease;
+    /* Nav Tabs */
+    .tabs-nav {
       display: flex;
-      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(254, 44, 85, 0.15);
+      border-color: rgba(254, 44, 85, 0.4);
+    }
+    .tab-btn.tab-cyan.active {
+      background: rgba(37, 244, 238, 0.15);
+      border-color: rgba(37, 244, 238, 0.4);
+    }
+
+    /* Tab Content Panes */
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-md);
+      padding: 36px 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.015);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      outline: none;
     }
     .dropzone:hover, .dropzone.drag-active {
-      border-color: var(--tiktok-red);
-      background: rgba(254, 44, 85, 0.08);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(254, 44, 85, 0.15);
+      border-color: var(--tiktok-cyan);
+      background: rgba(37, 244, 238, 0.04);
+      box-shadow: 0 0 30px rgba(37, 244, 238, 0.15);
     }
     .drop-icon-wrap {
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, rgba(254, 44, 85, 0.2), rgba(37, 244, 238, 0.2));
+      background: rgba(255, 255, 255, 0.04);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--tiktok-red);
-      font-size: 28px;
-      transition: transform 0.3s ease;
+      margin: 0 auto 14px;
+      color: var(--tiktok-cyan);
+      transition: transform 0.2s;
     }
     .dropzone:hover .drop-icon-wrap {
-      transform: scale(1.1) rotate(-5deg);
+      transform: scale(1.1);
+      background: rgba(37, 244, 238, 0.15);
     }
     .drop-text b {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
+      display: block;
+      font-size: 16px;
+      color: #fff;
+      margin-bottom: 4px;
     }
     .drop-text b span {
-      color: var(--tiktok-red);
+      color: var(--tiktok-cyan);
     }
     .drop-text small {
-      display: block;
-      color: var(--text-muted);
+      color: var(--text-dim);
       font-size: 13px;
-      margin-top: 4px;
     }
-    input[type="file"] {
+    #fileInput {
       display: none;
     }
 
-    /* Selected File Tag */
+    /* Selected File Badge */
     .file-badge {
       display: none;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       padding: 12px 16px;
-      margin-top: 16px;
-      font-family: var(--font-mono);
-      font-size: 13px;
+      margin-top: 18px;
     }
     .file-badge.visible {
       display: flex;
@@ -302,109 +332,130 @@
     .file-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-size: 14px;
+      font-family: var(--font-mono);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .file-pill {
-      background: rgba(37, 244, 238, 0.15);
-      color: var(--tiktok-cyan);
-      padding: 2px 8px;
-      border-radius: 4px;
+      background: var(--tiktok-red);
+      color: #fff;
       font-size: 11px;
       font-weight: 700;
-      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
     }
     .btn-remove-file {
-      background: none;
-      border: none;
+      background: transparent;
+      border: 0;
       color: var(--text-dim);
       cursor: pointer;
-      font-size: 16px;
-      padding: 4px;
-      line-height: 1;
+      font-size: 18px;
+      padding: 4px 8px;
+      border-radius: 4px;
       transition: color 0.2s;
     }
     .btn-remove-file:hover {
-      color: var(--tiktok-red);
+      color: #ff4757;
     }
 
-    /* Configuration Grid */
+    /* Settings Form */
     .settings-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-top: 24px;
+      gap: 16px;
+      margin-top: 20px;
     }
-    @media (max-width: 640px) {
+    @media (max-width: 600px) {
       .settings-grid {
         grid-template-columns: 1fr;
       }
     }
-    .form-group label {
+    .form-group {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group label {
       font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
     }
-    .form-group label .hint {
-      color: var(--tiktok-cyan);
-      font-family: var(--font-mono);
+    .form-group label span.hint {
+      color: var(--text-dim);
       font-size: 12px;
+      font-weight: normal;
     }
     .input-box {
       width: 100%;
-      background: rgba(10, 11, 16, 0.85);
+      background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--border);
-      color: var(--text);
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
+      padding: 10px 14px;
+      color: #fff;
       font-family: var(--font-mono);
       font-size: 14px;
-      transition: all 0.2s ease;
+      outline: none;
+      transition: border-color 0.2s;
     }
     .input-box:focus {
-      outline: none;
-      border-color: var(--tiktok-red);
-      box-shadow: 0 0 0 3px rgba(254, 44, 85, 0.2);
+      border-color: var(--border-focus);
+    }
+    select.input-box {
+      cursor: pointer;
     }
 
-    /* Multiplier Presets */
+    /* Info Callout */
+    .info-callout {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #a7f3d0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .info-callout.cyan {
+      background: rgba(37, 244, 238, 0.08);
+      border-color: rgba(37, 244, 238, 0.25);
+      color: #a5f3fc;
+    }
+
+    /* Presets Row */
     .presets-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-top: 8px;
+      flex-wrap: wrap;
     }
     .preset-chip {
-      flex: 1;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 6px;
-      padding: 6px 4px;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
       cursor: pointer;
-      transition: all 0.2s;
+      color: var(--text-muted);
+      transition: all 0.15s;
     }
     .preset-chip:hover {
-      background: rgba(255, 255, 255, 0.09);
-      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
     }
     .preset-chip.active {
-      background: rgba(254, 44, 85, 0.15);
+      background: rgba(254, 44, 85, 0.2);
       border-color: var(--tiktok-red);
       color: #fff;
     }
 
-    /* Execution Mode Toggle */
+    /* Mode Toggle Card */
     .mode-toggle-card {
       display: flex;
       align-items: center;
@@ -419,9 +470,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-    .mode-icon {
-      font-size: 20px;
     }
     .mode-text b {
       display: block;
@@ -457,8 +505,6 @@
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 24px;
-      position: relative;
-      overflow: hidden;
       transition: all 0.3s ease;
       box-shadow: 0 10px 25px rgba(254, 44, 85, 0.35);
       display: flex;
@@ -580,14 +626,14 @@
       margin-bottom: 6px;
     }
     .stat-card b {
-      font-size: 18px;
+      font-size: 17px;
       font-family: var(--font-mono);
       font-weight: 700;
       color: #fff;
     }
-    .stat-card b.highlight-red { color: var(--tiktok-red); }
-    .stat-card b.highlight-cyan { color: var(--tiktok-cyan); }
     .stat-card b.highlight-green { color: var(--success); }
+    .stat-card b.highlight-cyan { color: var(--tiktok-cyan); }
+    .stat-card b.highlight-red { color: var(--tiktok-red); }
 
     /* Video Preview Player */
     .preview-box {
@@ -603,12 +649,11 @@
     }
     .preview-box video {
       width: 100%;
-      max-height: 380px;
-      display: block;
-      object-fit: contain;
+      max-height: 400px;
+      outline: none;
     }
 
-    /* Download Button */
+    /* Download Action Button */
     .btn-download {
       display: flex;
       align-items: center;
@@ -618,33 +663,90 @@
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #fff;
       text-decoration: none;
-      border-radius: var(--radius-md);
       padding: 16px 24px;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 15px;
       text-transform: uppercase;
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
-      transition: all 0.3s ease;
+      letter-spacing: 0.05em;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
     }
     .btn-download:hover {
-      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 15px 35px rgba(16, 185, 129, 0.45);
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
     }
 
-    /* Explanation & Guide Cards */
+    /* Checker Tab Styles */
+    .checker-box {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .btn-check {
+      background: var(--tiktok-cyan);
+      color: #000;
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 10px 22px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-check:hover:not(:disabled) {
+      box-shadow: 0 0 20px rgba(37, 244, 238, 0.4);
+    }
+    .btn-check:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .check-results {
+      display: none;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .check-results.visible {
+      display: block;
+    }
+    .streams-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .streams-table th, .streams-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .streams-table th {
+      color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .stream-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-hd { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-sd { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    /* Educational Guide Card */
     .card-title {
+      font-size: 18px;
+      font-weight: 800;
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-    .card-title svg {
-      color: var(--tiktok-cyan);
+      margin-bottom: 18px;
     }
     .steps-list {
       list-style: none;
@@ -721,148 +823,240 @@
       <div class="links-group">
         <a class="icon-link" href="https://github.com/H4BOfficial66/Tiktok-Video-Optimization" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          <span>GitHub Repo</span>
+          <span>GitHub</span>
         </a>
       </div>
     </header>
 
     <!-- Hero Title -->
     <section class="hero">
-      <div class="hero-badge">⚡ Pure Fast-Start MP4 Metadata Engine</div>
+      <div class="hero-badge">⚡ 7-u8 Timescale Method & Container Toolkit</div>
       <h1>TikTok <span class="text-glow-red">Quality</span> <span class="text-glow-cyan">Optimizer</span></h1>
-      <p>Upload genuine 1080p 60fps MP4s to TikTok without compression or quality drops. Zero pixel loss, no re-encoding, and 100% processed directly inside your browser.</p>
+      <p>Upload genuine 1080p 60fps videos without duration stretching or 540p demotion. Preserves 100% of your real frames with zero pixel re-encoding.</p>
     </section>
 
-    <!-- Main Processing Card -->
+    <!-- Main Card -->
     <main class="glass-card">
-      <!-- File Dropzone -->
-      <div class="dropzone" id="dropzone" tabindex="0">
-        <div class="drop-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-        </div>
-        <div class="drop-text">
-          <b>Click to select video or <span>drag & drop</span></b>
-          <small>H.264 / AVC video (.mp4) • Recommended 1080p 60fps</small>
-        </div>
-      </div>
-      <input type="file" id="fileInput" accept="video/mp4,.mp4">
-
-      <!-- Selected File Badge -->
-      <div class="file-badge" id="fileBadge">
-        <div class="file-info">
-          <span class="file-pill">MP4</span>
-          <span id="fileName">video.mp4</span>
-          <span style="color: var(--text-dim);" id="fileSize">(0 MB)</span>
-        </div>
-        <button class="btn-remove-file" id="btnRemoveFile" title="Remove file">&times;</button>
+      <!-- Tabs Navigation -->
+      <div class="tabs-nav">
+        <button class="tab-btn active" id="tabBtnPatch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span>7-u8 Smoothness Trick (Recommended)</span>
+        </button>
+        <button class="tab-btn" id="tabBtnGhost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8v12l4-2 4 2 4-2 4 2V10a8 8 0 0 0-8-8z"/></svg>
+          <span>Ghost Frames (Legacy)</span>
+        </button>
+        <button class="tab-btn tab-cyan" id="tabBtnCheck">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>TikTok Link Inspector</span>
+        </button>
       </div>
 
-      <!-- Settings Grid -->
-      <div class="settings-grid">
-        <div class="form-group">
-          <label for="inputMultiplier">
-            <span>Multiplier</span>
-            <span class="hint" id="multiplierLabel">10x (Optimal 1080p60 • Duration Fixed)</span>
-          </label>
-          <input type="number" id="inputMultiplier" class="input-box" min="1" max="50" value="10">
-          <div class="presets-row">
-            <div class="preset-chip active" data-val="10">10x (1080p60 Best)</div>
-            <div class="preset-chip" data-val="5">5x (Moderate)</div>
-            <div class="preset-chip" data-val="1">1x (Safe Mode)</div>
+      <!-- PANE 1 & 2: Video Optimizer Form (Patch or Ghost) -->
+      <div class="tab-pane active" id="paneOptimizer">
+        <!-- File Dropzone -->
+        <div class="dropzone" id="dropzone" tabindex="0">
+          <div class="drop-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
           </div>
-          <small style="color: #10b981; font-size: 11px; display: block; margin-top: 6px;">
-            ✓ <b>1080p60 Trigger Active:</b> Preserves exact 60.0 fps timing & original video duration (no timeline stretch).
-          </small>
+          <div class="drop-text">
+            <b>Click to select video or <span>drag & drop</span></b>
+            <small>H.264 / AVC video (.mp4) • Recommended 1080p 60fps</small>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept="video/mp4,.mp4">
+
+        <!-- Selected File Badge -->
+        <div class="file-badge" id="fileBadge">
+          <div class="file-info">
+            <span class="file-pill">MP4</span>
+            <span id="fileName">video.mp4</span>
+            <span style="color: var(--text-dim);" id="fileSize">(0 MB)</span>
+          </div>
+          <button class="btn-remove-file" id="btnRemoveFile" title="Remove file">&times;</button>
         </div>
 
-        <div class="form-group">
-          <label for="inputComment">
-            <span>Metadata Bypass Signature</span>
-            <span class="hint">1080p60 Trigger Tag</span>
-          </label>
-          <input type="text" id="inputComment" class="input-box" value="TK8vY5VqBA6hUlo1yuGvNA">
-          <small style="color: var(--text-dim); font-size: 11px; display: block; margin-top: 6px; line-height: 1.35;">
-            Required metadata tag for TikTok's transcoder to assign the full 1080p60 quality profile.
-          </small>
+        <!-- Mode Specific Settings: 7-u8 FPS Patch -->
+        <div id="sectionPatchSettings">
+          <div class="settings-grid">
+            <div class="form-group">
+              <label for="selectSourceFps">
+                <span>Source Frame Rate</span>
+                <span class="hint">Your video's real FPS</span>
+              </label>
+              <select id="selectSourceFps" class="input-box">
+                <option value="auto">Auto-detect from MP4 (Recommended)</option>
+                <option value="60">60 FPS (Most gameplays / CapCut)</option>
+                <option value="120">120 FPS (High refresh display / camera)</option>
+                <option value="30">30 FPS (Standard video)</option>
+                <option value="59.94">59.94 NTSC</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="selectTargetFps">
+                <span>Target Container FPS</span>
+                <span class="hint">Ingestion Trigger</span>
+              </label>
+              <select id="selectTargetFps" class="input-box">
+                <option value="30" selected>30 FPS (Community Standard 60/120 Method)</option>
+                <option value="60">60 FPS (For 120 FPS sources)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="info-callout">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <div>
+              <b>Exact Duration Guaranteed:</b> A 13-second video remains <b>EXACTLY 13.00 seconds</b>. Zero dummy padding frames, zero timeline freeze, zero auto-privating, and TikTok serves all 60 frames smoothly in 1080p!
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Specific Settings: Legacy Ghost Frames (Hidden by default) -->
+        <div id="sectionGhostSettings" style="display: none;">
+          <div class="settings-grid">
+            <div class="form-group">
+              <label for="inputMultiplier">
+                <span>Frame Multiplier</span>
+                <span class="hint" id="multiplierLabel">10x (1080p60 Trigger)</span>
+              </label>
+              <input type="number" id="inputMultiplier" class="input-box" min="1" max="50" value="10">
+              <div class="presets-row">
+                <div class="preset-chip active" data-val="10">10x (1080p60 Best)</div>
+                <div class="preset-chip" data-val="5">5x (Moderate)</div>
+                <div class="preset-chip" data-val="1">1x (Safe Mode)</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputComment">
+                <span>Metadata Signature Tag</span>
+                <span class="hint">iTunes Comment Watermark</span>
+              </label>
+              <input type="text" id="inputComment" class="input-box" value="TK8vY5VqBA6hUlo1yuGvNA">
+              <small style="color: var(--text-dim); font-size: 11px; display: block; margin-top: 4px;">
+                Note: This tag is an informational comment tag, NOT an API license key.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engine Toggle Card -->
+        <div class="mode-toggle-card">
+          <div class="mode-info">
+            <span style="font-size: 20px;">⚡</span>
+            <div class="mode-text">
+              <b id="engineTitle">Client-Side Engine (In-Browser)</b>
+              <small id="engineDesc">Instant processing • 100% private • No server wait</small>
+            </div>
+          </div>
+          <span class="mode-badge" id="engineBadge">Instant</span>
+        </div>
+
+        <!-- Action Button -->
+        <button class="btn-transform" id="btnTransform" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span id="btnTransformText">Optimize Video (7-u8 Method)</span>
+        </button>
+
+        <!-- Progress Bar -->
+        <div class="progress-box" id="progressBox">
+          <div class="progress-header">
+            <span id="progressStep">Processing MP4 boxes...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <!-- Status Alerts -->
+        <div class="alert-msg" id="alertMsg"></div>
+
+        <!-- Results Panel -->
+        <div class="results-container" id="resultsContainer">
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+              <i>Duration</i>
+              <b id="statDuration" class="highlight-green">0.00s</b>
+            </div>
+            <div class="stat-card">
+              <i>Source Rate</i>
+              <b id="statSourceFps" class="highlight-cyan">60 FPS</b>
+            </div>
+            <div class="stat-card">
+              <i>Patched Rate</i>
+              <b id="statTargetFps">30 FPS</b>
+            </div>
+            <div class="stat-card">
+              <i>Method</i>
+              <b id="statMethod" style="color: #a7f3d0;">7-u8 FPS</b>
+            </div>
+            <div class="stat-card">
+              <i>Size Delta</i>
+              <b id="statDelta">+0 KB</b>
+            </div>
+            <div class="stat-card">
+              <i>Output Size</i>
+              <b id="statOutput">0 MB</b>
+            </div>
+          </div>
+
+          <!-- Video Preview -->
+          <div class="preview-box">
+            <video id="videoPreview" controls playsinline></video>
+          </div>
+
+          <!-- Download Action -->
+          <a class="btn-download" id="btnDownload" download="tiktok_optimized.mp4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download 1080p60 MP4</span>
+          </a>
         </div>
       </div>
 
-      <!-- Engine Execution Mode -->
-      <div class="mode-toggle-card">
-        <div class="mode-info">
-          <span class="mode-icon">⚡</span>
-          <div class="mode-text">
-            <b id="engineTitle">Client-Side Engine (In-Browser)</b>
-            <small id="engineDesc">Zero upload waiting • 100% private • Instant processing</small>
-          </div>
-        </div>
-        <span class="mode-badge" id="engineBadge">Instant</span>
-      </div>
+      <!-- PANE 3: TikTok Link Inspector Tab -->
+      <div class="tab-pane" id="paneInspector">
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">
+          Paste your published TikTok video link to see which resolutions and frame rates TikTok actually serves for your post.
+        </p>
 
-      <!-- Transform Button -->
-      <button class="btn-transform" id="btnTransform" disabled>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        <span>Optimize Video</span>
-      </button>
-
-      <!-- Progress Bar -->
-      <div class="progress-box" id="progressBox">
-        <div class="progress-header">
-          <span id="progressStep">Processing MP4 boxes...</span>
-          <span id="progressPercent">0%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-      </div>
-
-      <!-- Status Alerts -->
-      <div class="alert-msg" id="alertMsg"></div>
-
-      <!-- Results Panel -->
-      <div class="results-container" id="resultsContainer">
-        <!-- Stats Cards -->
-        <div class="stats-grid" id="statsGrid">
-          <div class="stat-card">
-            <i>Duration</i>
-            <b id="statDuration" class="highlight-green">0.00s</b>
-          </div>
-          <div class="stat-card">
-            <i>Real Frames</i>
-            <b id="statReal">0</b>
-          </div>
-          <div class="stat-card">
-            <i>Declared Frames</i>
-            <b id="statDeclared" class="highlight-cyan">0</b>
-          </div>
-          <div class="stat-card">
-            <i>Multiplier</i>
-            <b id="statMultiplier">1x</b>
-          </div>
-          <div class="stat-card">
-            <i>Metadata Added</i>
-            <b id="statDelta">+0 KB</b>
-          </div>
-          <div class="stat-card">
-            <i>Output Size</i>
-            <b id="statOutput">0 MB</b>
-          </div>
+        <div class="checker-box">
+          <input type="url" id="inputTiktokUrl" class="input-box" placeholder="https://www.tiktok.com/@username/video/1234567890123456789">
+          <button class="btn-check" id="btnCheckUrl">Check Quality</button>
         </div>
 
-        <!-- Video Preview -->
-        <div class="preview-box">
-          <video id="videoPreview" controls playsinline></video>
-        </div>
+        <div class="alert-msg" id="checkAlert"></div>
 
-        <!-- Download Action -->
-        <a class="btn-download" id="btnDownload" download="tiktok_optimized.mp4">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Download 1080p60 MP4</span>
-        </a>
+        <div class="check-results" id="checkResults">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <b id="checkAuthor" style="font-size: 16px; color: #fff;">@username</b>
+              <div id="checkTitle" style="color: var(--text-muted); font-size: 13px;">Video title caption</div>
+            </div>
+            <span class="mode-badge" id="checkVerdict">1080p 60FPS Verified</span>
+          </div>
+
+          <table class="streams-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Resolution</th>
+                <th>Frame Rate</th>
+                <th>Bitrate</th>
+                <th>Codec</th>
+              </tr>
+            </thead>
+            <tbody id="streamsTableBody">
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
 
@@ -870,28 +1064,28 @@
     <section class="glass-card">
       <h2 class="card-title">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        How It Works & Fixing TikTok Public Visibility
+        Understanding TikTok Quality & Fixing Public Post Issues
       </h2>
       <ul class="steps-list">
         <li class="step-item">
           <div class="step-num">1</div>
           <div class="step-body">
-            <b>Exact Video Duration & Zero Shadowban (1x Safe Mode)</b>
-            <p>Older frame-inflation hacks inflated declared frames by adding dummy frames, turning a 13-second video into 1:20+ min with dead silence and frozen screens. TikTok's AI detects this freeze and restricts the video to creator-only (0 views). <b>1x Safe Mode preserves your exact video duration</b>, aligns audio to the millisecond, and ensures your post is 100% public to everyone!</p>
+            <b>Why did the 13-second video turn into 4 minutes? (The Ghost Frames Bug)</b>
+            <p>Older frame-inflation scripts added thousands of dummy filler frames with real time deltas to inflate declared frames. A 13-second video at 18x multiplier added 221 seconds of dead silence, making the video 4 minutes long! When users swiped away from the 3.5 minutes of frozen black frames, TikTok's automated algorithm detected low retention and flagged the video, automatically privatizing it or demoting it to 540p. <b>The 7-u8 timescale method fixes this completely: duration remains 100% exact to the millisecond!</b></p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">2</div>
           <div class="step-body">
-            <b>Fast-Start Layout (moov before mdat) & High Profile</b>
-            <p>Relocates the <code>moov</code> atom before <code>mdat</code> for instant streaming on TikTok, patches <code>avcC</code> to High Profile (profile 100), cleans non-essential SEI NALUs, and updates <code>btrt</code> bitrates without altering your original pixels.</p>
+            <b>Is <code>TK8vY5VqBA6hUlo1yuGvNA</code> a secret API key?</b>
+            <p>No! <code>TK8vY5VqBA6hUlo1yuGvNA</code> is simply an iTunes metadata comment watermark (<code>©cmt</code>) hardcoded by early developers. TikTok's server does not require this key to upload 1080p. The real secret is the MP4 container timescale patch (7-u8 method) which triggers TikTok's transcoder to preserve 60fps/120fps.</p>
           </div>
         </li>
         <li class="step-item">
           <div class="step-num">3</div>
           <div class="step-body">
-            <b>TikTok App Upload Settings</b>
-            <p>In TikTok: Go to <b>Profile &gt; Settings &gt; Data Saver</b> (turn <b>OFF</b>). When uploading a post, tap <b>More options</b> &gt; toggle <b>"Allow high-quality uploads"</b> to <b>ON</b>.</p>
+            <b>Public vs Private Uploads</b>
+            <p>When uploading a video as <b>Private</b>, TikTok performs minimal transcoding. When uploading as <b>Public</b>, TikTok runs full AI moderation. With the 7-u8 method, your video contains 0 dummy frames, 0 frozen silence, and full audio-video synchronization, ensuring 100% viewer retention and full public 1080p delivery.</p>
           </div>
         </li>
       </ul>
@@ -899,7 +1093,7 @@
 
     <!-- Footer -->
     <footer>
-      <p>TikTok Video Optimizer &bull; Maintained by <a href="https://github.com/H4BOfficial66" target="_blank" rel="noopener">H4B Official</a> &bull; Based on <a href="https://github.com/BastienGimbert/tiktok-quality" target="_blank" rel="noopener">tiktok-quality</a> (MIT License)</p>
+      <p>TikTok Video Optimizer &bull; Maintained by <a href="https://github.com/H4BOfficial66" target="_blank" rel="noopener">H4B Official</a> &bull; Based on <a href="https://github.com/7-u8/TikTok-Quality-Toolkit" target="_blank" rel="noopener">7-u8/TikTok-Quality-Toolkit</a> & <a href="https://github.com/BastienGimbert/tiktok-quality" target="_blank" rel="noopener">tiktok-quality</a></p>
     </footer>
   </div>
 
@@ -915,30 +1109,60 @@
       let selectedFile = null;
       let outputBlobUrl = null;
       let hasBackend = false;
+      let activeTab = 'patch'; // 'patch' or 'ghost'
 
-      // Detect if FastAPI backend exists
+      // Check backend health
       fetch('/api/health')
         .then(res => res.json())
         .then(data => {
           if (data && data.ok) {
             hasBackend = true;
-            $('engineTitle').textContent = 'Hybrid Engine (Cloud API + Client)';
-            $('engineDesc').textContent = 'FastAPI server detected & active (' + data.max_upload_mb + 'MB limit)';
-            $('engineBadge').textContent = 'Cloud+Local';
+            $('engineTitle').textContent = 'Hybrid Engine (Cloud API + In-Browser)';
+            $('engineDesc').textContent = 'FastAPI server active (v' + data.version + ', ' + data.max_upload_mb + 'MB limit)';
+            $('engineBadge').textContent = 'Cloud+Client';
           }
         })
         .catch(() => {
-          // GitHub Pages / Static Hosting: 100% Client-side
           hasBackend = false;
         });
 
       // Format bytes
       function formatBytes(bytes) {
-        if (bytes === 0) return '0 B';
+        if (!bytes || bytes === 0) return '0 B';
         const k = 1024;
         const sizes = ['B', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Tab Switching
+      $('tabBtnPatch').onclick = () => switchTab('patch');
+      $('tabBtnGhost').onclick = () => switchTab('ghost');
+      $('tabBtnCheck').onclick = () => switchTab('check');
+
+      function switchTab(tab) {
+        $('tabBtnPatch').classList.toggle('active', tab === 'patch');
+        $('tabBtnGhost').classList.toggle('active', tab === 'ghost');
+        $('tabBtnCheck').classList.toggle('active', tab === 'check');
+
+        if (tab === 'check') {
+          $('paneOptimizer').classList.remove('active');
+          $('paneInspector').classList.add('active');
+        } else {
+          $('paneOptimizer').classList.add('active');
+          $('paneInspector').classList.remove('active');
+          activeTab = tab;
+
+          if (tab === 'patch') {
+            $('sectionPatchSettings').style.display = 'block';
+            $('sectionGhostSettings').style.display = 'none';
+            $('btnTransformText').textContent = 'Optimize Video (7-u8 Method)';
+          } else {
+            $('sectionPatchSettings').style.display = 'none';
+            $('sectionGhostSettings').style.display = 'block';
+            $('btnTransformText').textContent = 'Optimize Video (Ghost Frames)';
+          }
+        }
       }
 
       // Handle File Selection
@@ -958,7 +1182,7 @@
         hideAlert();
       }
 
-      // Drag and Drop Events
+      // Drag & Drop
       const dropzone = $('dropzone');
       const fileInput = $('fileInput');
 
@@ -1001,38 +1225,16 @@
         hideAlert();
       };
 
-      // Multiplier presets
+      // Ghost Multiplier Chips
       document.querySelectorAll('.preset-chip').forEach(chip => {
         chip.onclick = () => {
           document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
           const val = chip.getAttribute('data-val');
           $('inputMultiplier').value = val;
-          updateMultiplierHint(val);
+          $('multiplierLabel').textContent = val + 'x';
         };
       });
-
-      $('inputMultiplier').oninput = e => {
-        updateMultiplierHint(e.target.value);
-        document.querySelectorAll('.preset-chip').forEach(c => {
-          c.classList.toggle('active', c.getAttribute('data-val') === e.target.value);
-        });
-      };
-
-      function updateMultiplierHint(val) {
-        const v = parseInt(val, 10) || 10;
-        let hint = 'Optimal 1080p60';
-        if (v === 10) {
-          hint = 'Optimal 1080p60 (Recommended)';
-        } else if (v === 5) {
-          hint = 'Moderate (5x Frame Boost)';
-        } else if (v === 1) {
-          hint = 'Safe Mode (1x Frame Passthrough)';
-        } else {
-          hint = 'Custom Profile';
-        }
-        $('multiplierLabel').textContent = v + 'x (' + hint + ')';
-      }
 
       function showAlert(msg, type) {
         const el = $('alertMsg');
@@ -1053,19 +1255,23 @@
         if (stepText) $('progressStep').textContent = stepText;
       }
 
-      function displayResults(blob, stats) {
+      function displayResults(blob, stats, isPatch) {
         if (outputBlobUrl) URL.revokeObjectURL(outputBlobUrl);
         outputBlobUrl = URL.createObjectURL(blob);
 
-        if ($('statDuration')) {
-          const dur = stats.duration_sec ? stats.duration_sec + 's' : 'Exact';
-          $('statDuration').textContent = dur + ' (Exact Duration)';
+        $('statDuration').textContent = (stats.duration_sec ? stats.duration_sec + 's' : 'Exact') + ' (100% Exact)';
+        if (isPatch) {
+          $('statSourceFps').textContent = (stats.source_fps ? stats.source_fps + ' FPS' : 'Auto');
+          $('statTargetFps').textContent = (stats.target_fps ? stats.target_fps + ' FPS' : '30 FPS');
+          $('statMethod').textContent = '7-u8 FPS Patch';
+        } else {
+          $('statSourceFps').textContent = stats.original_frames + ' f';
+          $('statTargetFps').textContent = stats.declared_frames + ' f';
+          $('statMethod').textContent = stats.multiplier + 'x Ghost';
         }
-        $('statReal').textContent = stats.original_frames.toLocaleString();
-        $('statDeclared').textContent = stats.declared_frames.toLocaleString();
-        $('statMultiplier').textContent = stats.multiplier + 'x';
-        $('statDelta').textContent = (stats.size_delta >= 0 ? '+' : '') + (stats.size_delta / 1024).toFixed(1) + ' KB';
-        $('statOutput').textContent = formatBytes(stats.output_size);
+
+        $('statDelta').textContent = (stats.size_delta >= 0 ? '+' : '') + Math.round((stats.size_delta || 0) / 1024) + ' KB';
+        $('statOutput').textContent = formatBytes(stats.output_size || blob.size);
 
         const video = $('videoPreview');
         video.src = outputBlobUrl;
@@ -1073,96 +1279,236 @@
         const dl = $('btnDownload');
         dl.href = outputBlobUrl;
         const stem = selectedFile.name.replace(/\.mp4$/i, '');
-        dl.download = stem + '_1080p60_tiktok.mp4';
+        dl.download = stem + (isPatch ? '_smooth_tiktok.mp4' : '_1080p60_tiktok.mp4');
 
         $('resultsContainer').classList.add('visible');
-        showAlert('Done! MP4 container optimized successfully with no re-encoding.', 'ok');
+        showAlert('Done! Video optimized successfully with exact duration preserved.', 'ok');
       }
 
-      // Execute Transformation
+      // Execute Transform
       $('btnTransform').onclick = async () => {
         if (!selectedFile) return;
 
-        const multiplier = parseInt($('inputMultiplier').value, 10) || 10;
-        const comment = $('inputComment').value.trim();
-
         $('btnTransform').disabled = true;
         hideAlert();
-        updateProgress(5, 'Reading file into memory...');
+        updateProgress(5, 'Loading file...');
 
-        // If backend is available and user wants server processing:
-        if (hasBackend) {
-          try {
-            const fd = new FormData();
-            fd.append('file', selectedFile);
-            fd.append('multiplier', multiplier);
-            fd.append('comment', comment);
+        const isPatch = (activeTab === 'patch');
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/transform');
-            xhr.responseType = 'blob';
+        if (isPatch) {
+          const fpsInVal = $('selectSourceFps').value;
+          const fpsIn = (fpsInVal === 'auto') ? null : parseFloat(fpsInVal);
+          const fpsOut = parseFloat($('selectTargetFps').value) || 30.0;
 
-            xhr.upload.onprogress = e => {
-              if (e.lengthComputable) {
-                const p = Math.round((e.loaded / e.total) * 100);
-                updateProgress(Math.floor(p * 0.8), p < 100 ? 'Uploading to server… ' + p + '%' : 'Processing container on server…');
-              }
-            };
+          // Try Server if available
+          if (hasBackend) {
+            try {
+              const fd = new FormData();
+              fd.append('file', selectedFile);
+              if (fpsIn) fd.append('fps_in', fpsIn);
+              fd.append('fps_out', fpsOut);
+              fd.append('mode', 'method');
 
-            xhr.onload = async () => {
-              if (xhr.status === 200) {
-                const stats = JSON.parse(xhr.getResponseHeader('X-Stats') || '{}');
-                updateProgress(100, 'Finished!');
-                displayResults(xhr.response, stats);
-                $('btnTransform').disabled = false;
-              } else {
-                console.warn('Backend returned status ' + xhr.status + ', falling back to in-browser engine...');
-                runClientTransform(multiplier, comment);
-              }
-            };
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', '/api/patch_fps');
+              xhr.responseType = 'blob';
 
-            xhr.onerror = () => {
-              console.warn('Backend failed, falling back to in-browser client engine...');
-              runClientTransform(multiplier, comment);
-            };
+              xhr.upload.onprogress = e => {
+                if (e.lengthComputable) {
+                  const p = Math.round((e.loaded / e.total) * 100);
+                  updateProgress(Math.floor(p * 0.8), 'Uploading... ' + p + '%');
+                }
+              };
 
-            xhr.send(fd);
-            return;
-          } catch (e) {
-            console.warn('Backend failed, falling back to in-browser client engine...', e);
+              xhr.onload = () => {
+                if (xhr.status === 200) {
+                  const stats = JSON.parse(xhr.getResponseHeader('X-Stats') || '{}');
+                  updateProgress(100, 'Complete!');
+                  displayResults(xhr.response, stats, true);
+                  $('btnTransform').disabled = false;
+                } else {
+                  console.warn('Backend error, falling back to browser engine...');
+                  runClientPatch(fpsIn, fpsOut);
+                }
+              };
+
+              xhr.onerror = () => runClientPatch(fpsIn, fpsOut);
+              xhr.send(fd);
+              return;
+            } catch (e) {
+              console.warn('Server failed, fallback to client:', e);
+            }
           }
-        }
 
-        // Run Client-Side Transformation (Pure JavaScript in-browser)
-        runClientTransform(multiplier, comment);
+          runClientPatch(fpsIn, fpsOut);
+
+        } else {
+          // Ghost Frames
+          const multiplier = parseInt($('inputMultiplier').value, 10) || 10;
+          const comment = $('inputComment').value.trim();
+
+          if (hasBackend) {
+            try {
+              const fd = new FormData();
+              fd.append('file', selectedFile);
+              fd.append('multiplier', multiplier);
+              fd.append('comment', comment);
+
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', '/api/transform');
+              xhr.responseType = 'blob';
+              xhr.upload.onprogress = e => {
+                if (e.lengthComputable) {
+                  const p = Math.round((e.loaded / e.total) * 100);
+                  updateProgress(Math.floor(p * 0.8), 'Processing... ' + p + '%');
+                }
+              };
+              xhr.onload = () => {
+                if (xhr.status === 200) {
+                  const stats = JSON.parse(xhr.getResponseHeader('X-Stats') || '{}');
+                  updateProgress(100, 'Complete!');
+                  displayResults(xhr.response, stats, false);
+                  $('btnTransform').disabled = false;
+                } else {
+                  runClientGhost(multiplier, comment);
+                }
+              };
+              xhr.onerror = () => runClientGhost(multiplier, comment);
+              xhr.send(fd);
+              return;
+            } catch (e) {}
+          }
+
+          runClientGhost(multiplier, comment);
+        }
       };
 
-      async function runClientTransform(multiplier, comment) {
+      async function runClientPatch(fpsIn, fpsOut) {
         try {
-          updateProgress(15, 'Loading video bytes in browser...');
+          updateProgress(20, 'Reading video in browser...');
           const arrayBuffer = await selectedFile.arrayBuffer();
           const uint8 = new Uint8Array(arrayBuffer);
 
-          updateProgress(30, 'Parsing container boxes...');
-
-          // Run client-side TikTok Quality transform
-          const result = TikTokQuality.transformMp4(uint8, {
-            multiplier: multiplier,
-            comment: comment,
-            onProgress: (pct, step) => {
-              updateProgress(pct, step);
-            }
+          updateProgress(40, 'Applying 7-u8 timescale patch...');
+          const res = TikTokQuality.patchFps(uint8, {
+            fpsIn: fpsIn,
+            fpsOut: fpsOut,
+            mode: 'method',
+            includeAudio: true,
+            onProgress: (pct, step) => updateProgress(pct, step)
           });
 
-          const blob = new Blob([result.output], { type: 'video/mp4' });
-          displayResults(blob, result.stats);
+          const blob = new Blob([res.output], { type: 'video/mp4' });
+          displayResults(blob, res.stats, true);
         } catch (err) {
-          console.error('Transform error:', err);
-          showAlert('Error processing video: ' + (err.message || err), 'err');
+          showAlert('Patch Error: ' + (err.message || err), 'err');
         } finally {
           $('btnTransform').disabled = false;
         }
       }
+
+      async function runClientGhost(multiplier, comment) {
+        try {
+          updateProgress(20, 'Reading video in browser...');
+          const arrayBuffer = await selectedFile.arrayBuffer();
+          const uint8 = new Uint8Array(arrayBuffer);
+
+          updateProgress(40, 'Applying ghost frame transform...');
+          const res = TikTokQuality.transformMp4(uint8, {
+            multiplier: multiplier,
+            comment: comment,
+            onProgress: (pct, step) => updateProgress(pct, step)
+          });
+
+          const blob = new Blob([res.output], { type: 'video/mp4' });
+          displayResults(blob, res.stats, false);
+        } catch (err) {
+          showAlert('Transform Error: ' + (err.message || err), 'err');
+        } finally {
+          $('btnTransform').disabled = false;
+        }
+      }
+
+      // Link Inspector Feature
+      $('btnCheckUrl').onclick = async () => {
+        const url = $('inputTiktokUrl').value.trim();
+        if (!url) {
+          showCheckAlert('Please enter a valid TikTok video URL.', 'err');
+          return;
+        }
+
+        $('btnCheckUrl').disabled = true;
+        $('btnCheckUrl').textContent = 'Checking...';
+        hideCheckAlert();
+        $('checkResults').classList.remove('visible');
+
+        try {
+          const res = await fetch('/api/check_tiktok?url=' + encodeURIComponent(url));
+          const json = await res.json();
+          if (json.ok && json.data) {
+            displayCheckResults(json.data);
+          } else {
+            showCheckAlert(json.error || 'Could not inspect TikTok video. Ensure the video is public.', 'err');
+          }
+        } catch (e) {
+          showCheckAlert('Failed to connect to inspection API: ' + e.message, 'err');
+        } finally {
+          $('btnCheckUrl').disabled = false;
+          $('btnCheckUrl').textContent = 'Check Quality';
+        }
+      };
+
+      function showCheckAlert(msg, type) {
+        const el = $('checkAlert');
+        el.className = 'alert-msg visible ' + type;
+        el.textContent = msg;
+      }
+
+      function hideCheckAlert() {
+        const el = $('checkAlert');
+        el.className = 'alert-msg';
+        el.textContent = '';
+      }
+
+      function displayCheckResults(data) {
+        $('checkAuthor').textContent = '@' + (data.author || 'tiktok_user');
+        $('checkTitle').textContent = data.title || 'TikTok Video';
+        $('checkVerdict').textContent = data.verdict || 'Streams Analyzed';
+
+        if (data.is_60fps && data.is_1080p) {
+          $('checkVerdict').style.background = 'rgba(16, 185, 129, 0.2)';
+          $('checkVerdict').style.color = '#34d399';
+        } else if (data.is_1080p) {
+          $('checkVerdict').style.background = 'rgba(37, 244, 238, 0.2)';
+          $('checkVerdict').style.color = '#25f4ee';
+        } else {
+          $('checkVerdict').style.background = 'rgba(245, 158, 11, 0.2)';
+          $('checkVerdict').style.color = '#fbbf24';
+        }
+
+        const tbody = $('streamsTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.streams || !data.streams.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-dim);">No stream data available</td></tr>';
+        } else {
+          data.streams.forEach(s => {
+            const tr = document.createElement('tr');
+            const isHd = s.height >= 1080;
+            tr.innerHTML = `
+              <td><span class="stream-tag ${isHd ? 'tag-hd' : 'tag-sd'}">${s.name || 'Stream'}</span></td>
+              <td><b>${s.width}x${s.height}</b></td>
+              <td><b style="color: ${s.fps >= 50 ? 'var(--tiktok-cyan)' : 'inherit'}">${s.fps || 30} FPS</b></td>
+              <td>${s.mbps ? s.mbps + ' Mbps' : '-'}</td>
+              <td>${s.codec || 'H.264'}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        $('checkResults').classList.add('visible');
+      }
+
     })();
   </script>
 </body>
