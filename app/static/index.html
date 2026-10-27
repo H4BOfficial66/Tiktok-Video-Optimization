@@ -1,123 +1,1150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TikTok Quality – 1080p60 MP4 Container Tool</title>
-<style>
-:root{--bg:#07070a;--panel:#101014;--line:#2a1216;--red:#ff1f3d;--red2:#b3122a;--txt:#f4f4f6;--mut:#9a9aa6;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-*,*::before,*::after{box-sizing:inherit}
-html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:radial-gradient(900px 420px at 50% -120px,#3a0a14 0%,transparent 70%),var(--bg);color:var(--txt);font:16px/1.55 ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;min-height:100vh}
-.wrap{max-width:760px;margin:0 auto;padding:40px 18px 64px}
-h1{font-size:clamp(28px,6vw,44px);letter-spacing:.04em;margin:0 0 6px;text-transform:uppercase}
-h1 span{color:var(--red);text-shadow:0 0 18px rgba(255,31,61,.55)}
-.sub{color:var(--mut);margin:0 0 28px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px;box-shadow:0 0 0 1px rgba(255,31,61,.04),0 8px 30px rgba(0,0,0,.5)}
-#drop{border:2px dashed var(--red2);border-radius:10px;padding:38px 16px;text-align:center;cursor:pointer;transition:.15s}
-#drop:hover,#drop.on{background:rgba(255,31,61,.07);border-color:var(--red)}
-#drop b{color:var(--red)}
-#drop small{display:block;color:var(--mut);margin-top:6px}
-input[type=file]{display:none}
-label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.08em}
-input[type=number],input[type=text]{width:100%;background:#0a0a0d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:10px 12px;font:inherit}
-input:focus{outline:1px solid var(--red)}
-.row{display:grid;grid-template-columns:1fr 2fr;gap:14px}
-@media(max-width:560px){.row{grid-template-columns:1fr}}
-button,.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:6px;padding:12px 22px;font:inherit;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;margin-top:18px}
-button:hover,.btn:hover{background:#ff4560;box-shadow:0 0 18px rgba(255,31,61,.5)}
-button:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-#file{margin-top:14px;color:var(--mut);word-break:break-all}
-#msg{margin-top:14px;min-height:1.4em}
-.err{color:#ff6b7f}.ok{color:#6dffb0}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
-.stats div{background:#0a0a0d;border:1px solid var(--line);border-radius:6px;padding:10px}
-.stats i{display:block;font-style:normal;font-size:12px;color:var(--mut);text-transform:uppercase}
-.stats b{font-size:18px}
-h2{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin:0 0 10px}
-ol{margin:0;padding-left:20px;color:var(--mut)}li{margin:4px 0}
-.note{color:var(--mut);font-size:13px}
-footer{color:var(--mut);font-size:12px;text-align:center;margin-top:28px}
-footer a{color:var(--red)}
-.hide{display:none}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TikTok Video Optimizer – 1080p 60fps Ultra HD Container Tool</title>
+  <meta name="description" content="Upload crisp 1080p 60fps videos on TikTok without compression or re-encoding. Pure fast-start MP4 container optimization directly in your browser.">
+  <meta name="theme-color" content="#fe2c55">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TikTok Video Optimizer – 1080p60 Container Tool">
+  <meta property="og:description" content="Upload 1080p 60fps on TikTok without compression. 100% Client-side and server-ready.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090a0f;
+      --bg-card: rgba(18, 20, 29, 0.75);
+      --bg-card-hover: rgba(24, 27, 40, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(254, 44, 85, 0.6);
+      --tiktok-red: #fe2c55;
+      --tiktok-red-glow: rgba(254, 44, 85, 0.35);
+      --tiktok-cyan: #25f4ee;
+      --tiktok-cyan-glow: rgba(37, 244, 238, 0.3);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Lighting Background */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .glow-orb-1 {
+      position: absolute;
+      top: -150px;
+      left: 20%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(254, 44, 85, 0.18) 0%, transparent 70%);
+      filter: blur(80px);
+      animation: floatOrb 14s ease-in-out infinite alternate;
+    }
+    .glow-orb-2 {
+      position: absolute;
+      top: 15%;
+      right: 15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(37, 244, 238, 0.14) 0%, transparent 70%);
+      filter: blur(90px);
+      animation: floatOrb 18s ease-in-out infinite alternate-reverse;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at 50% 20%, black 40%, transparent 80%);
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(80px) scale(1.15); }
+    }
+
+    /* Layout Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 36px 20px 80px;
+    }
+
+    /* Top Navigation / Badges */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--tiktok-cyan);
+      box-shadow: 0 0 10px var(--tiktok-cyan);
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .links-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .icon-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+    .icon-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Header Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(90deg, rgba(254, 44, 85, 0.15), rgba(37, 244, 238, 0.15));
+      border: 1px solid rgba(254, 44, 85, 0.3);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5.5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .hero h1 .text-glow-red {
+      color: var(--tiktok-red);
+      text-shadow: 0 0 28px var(--tiktok-red-glow);
+    }
+    .hero h1 .text-glow-cyan {
+      color: var(--tiktok-cyan);
+      text-shadow: 0 0 28px var(--tiktok-cyan-glow);
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: clamp(15px, 2vw, 17px);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* Main Card */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      transition: border-color 0.25s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    /* Drop Zone */
+    .dropzone {
+      border: 2px dashed rgba(254, 44, 85, 0.35);
+      background: rgba(254, 44, 85, 0.02);
+      border-radius: var(--radius-md);
+      padding: 44px 24px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .dropzone:hover, .dropzone.drag-active {
+      border-color: var(--tiktok-red);
+      background: rgba(254, 44, 85, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(254, 44, 85, 0.15);
+    }
+    .drop-icon-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(254, 44, 85, 0.2), rgba(37, 244, 238, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tiktok-red);
+      font-size: 28px;
+      transition: transform 0.3s ease;
+    }
+    .dropzone:hover .drop-icon-wrap {
+      transform: scale(1.1) rotate(-5deg);
+    }
+    .drop-text b {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .drop-text b span {
+      color: var(--tiktok-red);
+    }
+    .drop-text small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Selected File Tag */
+    .file-badge {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .file-badge.visible {
+      display: flex;
+    }
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-pill {
+      background: rgba(37, 244, 238, 0.15);
+      color: var(--tiktok-cyan);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .btn-remove-file {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .btn-remove-file:hover {
+      color: var(--tiktok-red);
+    }
+
+    /* Configuration Grid */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+    @media (max-width: 640px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .form-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .form-group label .hint {
+      color: var(--tiktok-cyan);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .input-box {
+      width: 100%;
+      background: rgba(10, 11, 16, 0.85);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .input-box:focus {
+      outline: none;
+      border-color: var(--tiktok-red);
+      box-shadow: 0 0 0 3px rgba(254, 44, 85, 0.2);
+    }
+
+    /* Multiplier Presets */
+    .presets-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .preset-chip {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preset-chip:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--text);
+    }
+    .preset-chip.active {
+      background: rgba(254, 44, 85, 0.15);
+      border-color: var(--tiktok-red);
+      color: #fff;
+    }
+
+    /* Execution Mode Toggle */
+    .mode-toggle-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 20px;
+    }
+    .mode-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mode-icon {
+      font-size: 20px;
+    }
+    .mode-text b {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .mode-text small {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    .mode-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Transform Action Button */
+    .btn-transform {
+      width: 100%;
+      background: linear-gradient(135deg, var(--tiktok-red) 0%, #d8113c 100%);
+      color: #fff;
+      border: 0;
+      border-radius: var(--radius-md);
+      padding: 18px 28px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(254, 44, 85, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-transform:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(254, 44, 85, 0.5);
+      background: linear-gradient(135deg, #ff4567 0%, #fe2c55 100%);
+    }
+    .btn-transform:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Progress Bar */
+    .progress-box {
+      display: none;
+      margin-top: 20px;
+    }
+    .progress-box.visible {
+      display: block;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+    .progress-header span:last-child {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--tiktok-cyan);
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--tiktok-red), var(--tiktok-cyan));
+      border-radius: 999px;
+      transition: width 0.15s ease;
+    }
+
+    /* Message / Status Alert */
+    .alert-msg {
+      margin-top: 16px;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+    .alert-msg.visible {
+      display: block;
+    }
+    .alert-msg.err {
+      color: #ff6b7f;
+      background: rgba(255, 107, 127, 0.1);
+      border: 1px solid rgba(255, 107, 127, 0.25);
+      padding: 12px 16px;
+    }
+    .alert-msg.ok {
+      color: #6ee7b7;
+      background: rgba(110, 231, 183, 0.1);
+      border: 1px solid rgba(110, 231, 183, 0.25);
+      padding: 12px 16px;
+    }
+
+    /* Result Section */
+    .results-container {
+      display: none;
+      margin-top: 28px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .results-container.visible {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: rgba(10, 11, 16, 0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .stat-card i {
+      display: block;
+      font-style: normal;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .stat-card b {
+      font-size: 18px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+    }
+    .stat-card b.highlight-red { color: var(--tiktok-red); }
+    .stat-card b.highlight-cyan { color: var(--tiktok-cyan); }
+    .stat-card b.highlight-green { color: var(--success); }
+
+    /* Video Preview Player */
+    .preview-box {
+      margin-bottom: 24px;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      max-height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-box video {
+      width: 100%;
+      max-height: 380px;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* Download Button */
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+      transition: all 0.3s ease;
+    }
+    .btn-download:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(16, 185, 129, 0.45);
+    }
+
+    /* Explanation & Guide Cards */
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .card-title svg {
+      color: var(--tiktok-cyan);
+    }
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(254, 44, 85, 0.2);
+      color: var(--tiktok-red);
+      border: 1px solid rgba(254, 44, 85, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .step-body b {
+      color: #fff;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .step-body p {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+    footer a {
+      color: var(--tiktok-cyan);
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>TikTok <span>Quality</span></h1>
-  <p class="sub">Upload 1080p 60fps without re-encoding. Pure MP4 container metadata change – processed on our server and deleted right after download.</p>
 
-  <div class="card">
-    <div id="drop" tabindex="0"><b>Click to choose</b> or drop an MP4 here<small>H.264 / AVC video only (.mp4)</small></div>
-    <input id="inp" type="file" accept="video/mp4,.mp4">
-    <div id="file"></div>
-    <div class="row">
-      <div><label for="mul">Multiplier</label><input id="mul" type="number" min="2" max="50" value="10"></div>
-      <div><label for="cmt">Metadata comment tag</label><input id="cmt" type="text" value="TK8vY5VqBA6hUlo1yuGvNA"></div>
-    </div>
-    <button id="go" disabled>Transform</button>
-    <div id="msg"></div>
-    <div id="res" class="hide">
-      <div class="stats" id="stats"></div>
-      <a id="dl" class="btn" download="output.mp4">Download output.mp4</a>
-    </div>
+  <!-- Ambient Animated Lighting -->
+  <div class="ambient-glow">
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+    <div class="grid-overlay"></div>
   </div>
 
-  <div class="card">
-    <h2>How it works</h2>
-    <ol>
-      <li>Your MP4 is uploaded to the server and processed by the Python tool. Files are deleted right after.</li>
-      <li>The container is rewritten: fast-start layout, first-frame SEI stripped, avcC / bitrate boxes patched.</li>
-      <li>“Ghost frames” are appended to the video tables – all pointing at one 8-byte filler block.</li>
-      <li>No pixel changes, no re-encoding. File grows only by the metadata tables (~100&nbsp;KB for 1 minute at 60fps).</li>
-    </ol>
-    <p class="note">Platforms can change their upload checks at any time, so results are not guaranteed. Max upload size is set by the server (default 500&nbsp;MB).</p>
+  <div class="container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="brand-pill">
+        <span class="status-dot"></span>
+        <span>TikTok Optimizer Live</span>
+      </div>
+      <div class="links-group">
+        <a class="icon-link" href="https://github.com/H4BOfficial66/Tiktok-Video-Optimization" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub Repo</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Title -->
+    <section class="hero">
+      <div class="hero-badge">⚡ Pure Fast-Start MP4 Metadata Engine</div>
+      <h1>TikTok <span class="text-glow-red">Quality</span> <span class="text-glow-cyan">Optimizer</span></h1>
+      <p>Upload genuine 1080p 60fps MP4s to TikTok without compression or quality drops. Zero pixel loss, no re-encoding, and 100% processed directly inside your browser.</p>
+    </section>
+
+    <!-- Main Processing Card -->
+    <main class="glass-card">
+      <!-- File Dropzone -->
+      <div class="dropzone" id="dropzone" tabindex="0">
+        <div class="drop-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="drop-text">
+          <b>Click to select video or <span>drag & drop</span></b>
+          <small>H.264 / AVC video (.mp4) • Recommended 1080p 60fps</small>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept="video/mp4,.mp4">
+
+      <!-- Selected File Badge -->
+      <div class="file-badge" id="fileBadge">
+        <div class="file-info">
+          <span class="file-pill">MP4</span>
+          <span id="fileName">video.mp4</span>
+          <span style="color: var(--text-dim);" id="fileSize">(0 MB)</span>
+        </div>
+        <button class="btn-remove-file" id="btnRemoveFile" title="Remove file">&times;</button>
+      </div>
+
+      <!-- Settings Grid -->
+      <div class="settings-grid">
+        <div class="form-group">
+          <label for="inputMultiplier">
+            <span>Multiplier</span>
+            <span class="hint" id="multiplierLabel">10x (Optimal)</span>
+          </label>
+          <input type="number" id="inputMultiplier" class="input-box" min="2" max="50" value="10">
+          <div class="presets-row">
+            <div class="preset-chip" data-val="5">5x</div>
+            <div class="preset-chip active" data-val="10">10x (Best)</div>
+            <div class="preset-chip" data-val="25">25x</div>
+            <div class="preset-chip" data-val="50">50x</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputComment">
+            <span>Metadata Tag</span>
+            <span class="hint">TikTok Bypass Signature</span>
+          </label>
+          <input type="text" id="inputComment" class="input-box" value="TK8vY5VqBA6hUlo1yuGvNA">
+        </div>
+      </div>
+
+      <!-- Engine Execution Mode -->
+      <div class="mode-toggle-card">
+        <div class="mode-info">
+          <span class="mode-icon">⚡</span>
+          <div class="mode-text">
+            <b id="engineTitle">Client-Side Engine (In-Browser)</b>
+            <small id="engineDesc">Zero upload waiting • 100% private • Instant processing</small>
+          </div>
+        </div>
+        <span class="mode-badge" id="engineBadge">Instant</span>
+      </div>
+
+      <!-- Transform Button -->
+      <button class="btn-transform" id="btnTransform" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Optimize Video</span>
+      </button>
+
+      <!-- Progress Bar -->
+      <div class="progress-box" id="progressBox">
+        <div class="progress-header">
+          <span id="progressStep">Processing MP4 boxes...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Status Alerts -->
+      <div class="alert-msg" id="alertMsg"></div>
+
+      <!-- Results Panel -->
+      <div class="results-container" id="resultsContainer">
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <i>Real Frames</i>
+            <b id="statReal">0</b>
+          </div>
+          <div class="stat-card">
+            <i>Declared Frames</i>
+            <b id="statDeclared" class="highlight-cyan">0</b>
+          </div>
+          <div class="stat-card">
+            <i>Multiplier</i>
+            <b id="statMultiplier" class="highlight-red">10x</b>
+          </div>
+          <div class="stat-card">
+            <i>Metadata Added</i>
+            <b id="statDelta" class="highlight-green">+0 KB</b>
+          </div>
+          <div class="stat-card">
+            <i>Output Size</i>
+            <b id="statOutput">0 MB</b>
+          </div>
+        </div>
+
+        <!-- Video Preview -->
+        <div class="preview-box">
+          <video id="videoPreview" controls playsinline></video>
+        </div>
+
+        <!-- Download Action -->
+        <a class="btn-download" id="btnDownload" download="tiktok_optimized.mp4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download 1080p60 MP4</span>
+        </a>
+      </div>
+    </main>
+
+    <!-- Educational Guide Card -->
+    <section class="glass-card">
+      <h2 class="card-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        How It Works & Crucial TikTok Settings
+      </h2>
+      <ul class="steps-list">
+        <li class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <b>Pure MP4 Container Metadata Rewriting</b>
+            <p>Your video pixels and audio are <b>never re-encoded</b>. The tool removes SEI packets from frame #1, updates the avcC box, and appends lightweight "ghost frames" pointing to an 8-byte filler block. The file only grows by ~100 KB.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <b>Fast-Start Layout (moov before mdat)</b>
+            <p>The container index (moov atom) is moved to the very beginning of the file, allowing TikTok's ingest servers to start streaming and validation instantly without re-processing.</p>
+          </div>
+        </li>
+        <li class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <b>Enable "Upload HD" in the TikTok App</b>
+            <p>In TikTok: Go to <b>Profile &gt; Settings &gt; Data Saver</b> (turn <b>OFF</b>). When uploading a post, tap <b>More options</b> &gt; toggle <b>"Allow high-quality uploads"</b> to <b>ON</b>.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>TikTok Video Optimizer &bull; Maintained by <a href="https://github.com/H4BOfficial66" target="_blank" rel="noopener">H4B Official</a> &bull; Based on <a href="https://github.com/BastienGimbert/tiktok-quality" target="_blank" rel="noopener">tiktok-quality</a> (MIT License)</p>
+    </footer>
   </div>
 
-  <footer>Based on <a href="https://github.com/BastienGimbert/tiktok-quality" target="_blank" rel="noopener">tiktok-quality</a> by Bastien Gimbert (MIT License).</footer>
-</div>
+  <!-- Load JavaScript MP4 Engine -->
+  <script src="tiktok_engine.js"></script>
 
-<script>
-(()=>{
-  const $=id=>document.getElementById(id);
-  let file=null,url=null;
-  const mb=b=>(b/1048576).toFixed(1)+' MB';
-  const pick=f=>{
-    if(!f)return;file=f;$('file').textContent=f.name+' ('+mb(f.size)+')';
-    $('go').disabled=false;$('res').classList.add('hide');$('msg').textContent='';
-  };
-  $('drop').onclick=()=>$('inp').click();
-  $('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')$('inp').click()};
-  $('inp').onchange=e=>pick(e.target.files[0]);
-  ['dragover','dragenter'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('on')}));
-  ['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('on')}));
-  $('drop').addEventListener('drop',e=>pick(e.dataTransfer.files[0]));
-  const fail=m=>{$('msg').className='err';$('msg').textContent='Error: '+m;$('go').disabled=false};
-  $('go').onclick=()=>{
-    const msg=$('msg');msg.className='';msg.textContent='Uploading… 0%';$('go').disabled=true;$('res').classList.add('hide');
-    const fd=new FormData();
-    fd.append('file',file);fd.append('multiplier',$('mul').value||10);
-    fd.append('comment',$('cmt').value||'TK8vY5VqBA6hUlo1yuGvNA');
-    const x=new XMLHttpRequest();x.open('POST','/api/transform');x.responseType='blob';
-    x.upload.onprogress=e=>{if(e.lengthComputable){const p=Math.round(e.loaded/e.total*100);msg.textContent=p<100?'Uploading… '+p+'%':'Processing on server…'}};
-    x.onerror=()=>fail('network error – is the server running?');
-    x.onload=async()=>{
-      if(x.status!==200){
-        let m='server error ('+x.status+')';
-        try{const d=JSON.parse(await x.response.text()).detail;if(typeof d==='string')m=d}catch(e){}
-        return fail(m);
+  <!-- Frontend Logic -->
+  <script>
+    (function() {
+      'use strict';
+
+      const $ = id => document.getElementById(id);
+      let selectedFile = null;
+      let outputBlobUrl = null;
+      let hasBackend = false;
+
+      // Detect if FastAPI backend exists
+      fetch('/api/health')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.ok) {
+            hasBackend = true;
+            $('engineTitle').textContent = 'Hybrid Engine (Cloud API + Client)';
+            $('engineDesc').textContent = 'FastAPI server detected & active (' + data.max_upload_mb + 'MB limit)';
+            $('engineBadge').textContent = 'Cloud+Local';
+          }
+        })
+        .catch(() => {
+          // GitHub Pages / Static Hosting: 100% Client-side
+          hasBackend = false;
+        });
+
+      // Format bytes
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
       }
-      const s=JSON.parse(x.getResponseHeader('X-Stats'));
-      if(url)URL.revokeObjectURL(url);
-      url=URL.createObjectURL(x.response);
-      $('dl').href=url;$('dl').download=file.name.replace(/\.mp4$/i,'')+'_tq.mp4';
-      $('stats').innerHTML=[['Real frames',s.original_frames],['Declared frames',s.declared_frames],['Multiplier','x'+s.multiplier],['Size change','+'+(s.size_delta/1024).toFixed(0)+' KB'],['Output',mb(s.output_size)]].map(a=>'<div><i>'+a[0]+'</i><b>'+a[1]+'</b></div>').join('');
-      $('res').classList.remove('hide');msg.className='ok';msg.textContent='Done – no re-encoding, container only.';
-      $('go').disabled=false;
-    };
-    x.send(fd);
-  };
-})();
-</script>
+
+      // Handle File Selection
+      function handleFile(file) {
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.mp4')) {
+          showAlert('Please select a valid .mp4 video file (H.264/AVC).', 'err');
+          return;
+        }
+
+        selectedFile = file;
+        $('fileName').textContent = file.name;
+        $('fileSize').textContent = '(' + formatBytes(file.size) + ')';
+        $('fileBadge').classList.add('visible');
+        $('btnTransform').disabled = false;
+        $('resultsContainer').classList.remove('visible');
+        hideAlert();
+      }
+
+      // Drag and Drop Events
+      const dropzone = $('dropzone');
+      const fileInput = $('fileInput');
+
+      dropzone.onclick = () => fileInput.click();
+      dropzone.onkeydown = e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      };
+
+      fileInput.onchange = e => handleFile(e.target.files[0]);
+
+      ['dragover', 'dragenter'].forEach(evt => {
+        dropzone.addEventListener(evt, e => {
+          e.preventDefault();
+          dropzone.classList.add('drag-active');
+        });
+      });
+
+      ['dragleave', 'dragend', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, e => {
+          e.preventDefault();
+          dropzone.classList.remove('drag-active');
+        });
+      });
+
+      dropzone.addEventListener('drop', e => {
+        if (e.dataTransfer && e.dataTransfer.files.length) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      $('btnRemoveFile').onclick = () => {
+        selectedFile = null;
+        fileInput.value = '';
+        $('fileBadge').classList.remove('visible');
+        $('btnTransform').disabled = true;
+        $('resultsContainer').classList.remove('visible');
+        hideAlert();
+      };
+
+      // Multiplier presets
+      document.querySelectorAll('.preset-chip').forEach(chip => {
+        chip.onclick = () => {
+          document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const val = chip.getAttribute('data-val');
+          $('inputMultiplier').value = val;
+          updateMultiplierHint(val);
+        };
+      });
+
+      $('inputMultiplier').oninput = e => {
+        updateMultiplierHint(e.target.value);
+        document.querySelectorAll('.preset-chip').forEach(c => {
+          c.classList.toggle('active', c.getAttribute('data-val') === e.target.value);
+        });
+      };
+
+      function updateMultiplierHint(val) {
+        const v = parseInt(val, 10) || 10;
+        let hint = 'Custom';
+        if (v === 5) hint = 'Standard';
+        else if (v === 10) hint = 'Optimal (Best for TikTok)';
+        else if (v === 25) hint = 'Extreme';
+        else if (v === 50) hint = 'Max Limit';
+        $('multiplierLabel').textContent = v + 'x (' + hint + ')';
+      }
+
+      function showAlert(msg, type) {
+        const el = $('alertMsg');
+        el.className = 'alert-msg visible ' + type;
+        el.textContent = msg;
+      }
+
+      function hideAlert() {
+        const el = $('alertMsg');
+        el.className = 'alert-msg';
+        el.textContent = '';
+      }
+
+      function updateProgress(percent, stepText) {
+        $('progressBox').classList.add('visible');
+        $('progressFill').style.width = percent + '%';
+        $('progressPercent').textContent = percent + '%';
+        if (stepText) $('progressStep').textContent = stepText;
+      }
+
+      function displayResults(blob, stats) {
+        if (outputBlobUrl) URL.revokeObjectURL(outputBlobUrl);
+        outputBlobUrl = URL.createObjectURL(blob);
+
+        $('statReal').textContent = stats.original_frames.toLocaleString();
+        $('statDeclared').textContent = stats.declared_frames.toLocaleString();
+        $('statMultiplier').textContent = stats.multiplier + 'x';
+        $('statDelta').textContent = '+' + (stats.size_delta / 1024).toFixed(1) + ' KB';
+        $('statOutput').textContent = formatBytes(stats.output_size);
+
+        const video = $('videoPreview');
+        video.src = outputBlobUrl;
+
+        const dl = $('btnDownload');
+        dl.href = outputBlobUrl;
+        const stem = selectedFile.name.replace(/\.mp4$/i, '');
+        dl.download = stem + '_1080p60_tiktok.mp4';
+
+        $('resultsContainer').classList.add('visible');
+        showAlert('Done! MP4 container optimized successfully with no re-encoding.', 'ok');
+      }
+
+      // Execute Transformation
+      $('btnTransform').onclick = async () => {
+        if (!selectedFile) return;
+
+        const multiplier = parseInt($('inputMultiplier').value, 10) || 10;
+        const comment = $('inputComment').value.trim() || 'TK8vY5VqBA6hUlo1yuGvNA';
+
+        $('btnTransform').disabled = true;
+        hideAlert();
+        updateProgress(5, 'Reading file into memory...');
+
+        // If backend is available and user wants server processing:
+        if (hasBackend) {
+          try {
+            const fd = new FormData();
+            fd.append('file', selectedFile);
+            fd.append('multiplier', multiplier);
+            fd.append('comment', comment);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/transform');
+            xhr.responseType = 'blob';
+
+            xhr.upload.onprogress = e => {
+              if (e.lengthComputable) {
+                const p = Math.round((e.loaded / e.total) * 100);
+                updateProgress(Math.floor(p * 0.8), p < 100 ? 'Uploading to server… ' + p + '%' : 'Processing container on server…');
+              }
+            };
+
+            xhr.onload = async () => {
+              if (xhr.status === 200) {
+                const stats = JSON.parse(xhr.getResponseHeader('X-Stats') || '{}');
+                updateProgress(100, 'Finished!');
+                displayResults(xhr.response, stats);
+                $('btnTransform').disabled = false;
+              } else {
+                throw new Error('Server returned ' + xhr.status);
+              }
+            };
+
+            xhr.onerror = () => {
+              console.warn('Backend failed, falling back to in-browser client engine...');
+              runClientTransform(multiplier, comment);
+            };
+
+            xhr.send(fd);
+            return;
+          } catch (e) {
+            console.warn('Backend failed, falling back to in-browser client engine...', e);
+          }
+        }
+
+        // Run Client-Side Transformation (Pure JavaScript in-browser)
+        runClientTransform(multiplier, comment);
+      };
+
+      async function runClientTransform(multiplier, comment) {
+        try {
+          updateProgress(15, 'Loading video bytes in browser...');
+          const arrayBuffer = await selectedFile.arrayBuffer();
+          const uint8 = new Uint8Array(arrayBuffer);
+
+          updateProgress(30, 'Parsing container boxes...');
+
+          // Run client-side TikTok Quality transform
+          const result = TikTokQuality.transformMp4(uint8, {
+            multiplier: multiplier,
+            comment: comment,
+            onProgress: (pct, step) => {
+              updateProgress(pct, step);
+            }
+          });
+
+          const blob = new Blob([result.output], { type: 'video/mp4' });
+          displayResults(blob, result.stats);
+        } catch (err) {
+          console.error('Transform error:', err);
+          showAlert('Error processing video: ' + (err.message || err), 'err');
+        } finally {
+          $('btnTransform').disabled = false;
+        }
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,6 +1,26 @@
-# Tiktok-Quality
+# TikTok Video Optimizer – 1080p 60fps Container Tool
 
-## Installation
+[![Live Website](https://img.shields.io/badge/Live%20Website-GitHub%20Pages-fe2c55?style=for-the-badge&logo=github)](https://h4bofficial66.github.io/Tiktok-Video-Optimization/)
+[![Deploy to Render](https://img.shields.io/badge/Deploy%20Backend-Render-46E3B7?style=for-the-badge&logo=render)](https://render.com/deploy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+> 🌐 **Live Website URL**: **[https://h4bofficial66.github.io/Tiktok-Video-Optimization/](https://h4bofficial66.github.io/Tiktok-Video-Optimization/)**  
+> ⚡ **100% Client-Side Engine**: Process videos directly in your browser without waiting for uploads or server limits.  
+> ☁️ **Docker / FastAPI Cloud API**: Full server-side backend ready for Docker, Render, Railway, or VPS.
+
+---
+
+## 🚀 Features
+
+- **Zero Compression Loss**: No re-encoding, pure MP4 container metadata modification.
+- **Instant In-Browser Processing**: Pure JavaScript Web Worker engine runs locally in your browser.
+- **Fast-Start Layout**: Relocates `moov` atom ahead of `mdat` for instant streaming on TikTok.
+- **SEI Cleanup**: Strips non-essential SEI NALUs from the first video sample.
+- **High Profile Patch**: Patches `avcC` and updates bitrate boxes (`btrt`).
+- **Ghost Frame Inflation**: Appends 10x-50x ghost frame entries pointing to an 8-byte filler block.
+
+---
+
 
 ```bash
 pip install tiktok-quality

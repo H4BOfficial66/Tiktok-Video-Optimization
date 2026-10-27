@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tiktok-video-optimization
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: MAX_UPLOAD_MB
+        value: "500"
+      - key: MAX_CONCURRENT_JOBS
+        value: "2"
+      - key: PORT
+        value: "8000"
