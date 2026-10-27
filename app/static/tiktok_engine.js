@@ -1059,10 +1059,112 @@
     };
   }
 
+  /**
+   * Diagnostic Inspector: Analyzes video resolution, orientation, and frame rate.
+   * Warns user if video is horizontal/square (cause of 540p demotion) or 30 FPS.
+   */
+  function inspectMp4(data) {
+    const [moovPos, moovSize] = findBox(data, 'moov');
+    const [mdatPos, mdatSize] = findBox(data, 'mdat');
+    if (!moovPos || !mdatPos) {
+      throw new Error("Invalid MP4 container: missing moov or mdat box.");
+    }
+    const faststart = moovPos < mdatPos;
+
+    const [vtPos, vtSize] = findTrackByHandler(data, moovPos, moovSize, strToBytes('vide'));
+    if (!vtPos) {
+      throw new Error("No video track found in the MP4 file.");
+    }
+
+    // Read dimensions from tkhd
+    const [tkhdPos, tkhdSize] = findBox(data, 'tkhd', vtPos + 8, vtPos + vtSize);
+    let width = 0, height = 0;
+    if (tkhdPos) {
+      width = readU32(data, tkhdPos + tkhdSize - 8) >>> 16;
+      height = readU32(data, tkhdPos + tkhdSize - 4) >>> 16;
+    }
+
+    // Read timescale and duration from mdhd
+    const [mdhdPos, mdhdSize] = findBoxPath(data, ['mdia', 'mdhd'], vtPos + 8, vtPos + vtSize);
+    let timescale = 1000, duration = 0;
+    if (mdhdPos) {
+      const ver = data[mdhdPos + 8];
+      if (ver === 0) {
+        timescale = readU32(data, mdhdPos + 8 + 12);
+        duration = readU32(data, mdhdPos + 8 + 16);
+      } else {
+        timescale = readU32(data, mdhdPos + 8 + 20);
+        duration = Number((BigInt(readU32(data, mdhdPos + 8 + 24)) << 32n) | BigInt(readU32(data, mdhdPos + 8 + 28)));
+      }
+    }
+    const durationSec = timescale > 0 ? duration / timescale : 0;
+
+    // Read FPS from stts
+    let fps = 30.0;
+    let sampleCount = 0;
+    const [stblPos, stblSize] = findBoxPath(data, ['mdia', 'minf', 'stbl'], vtPos + 8, vtPos + vtSize);
+    if (stblPos) {
+      const [sttsPos] = findBox(data, 'stts', stblPos + 8, stblPos + stblSize);
+      if (sttsPos) {
+        const count = readU32(data, sttsPos + 12);
+        let totalTicks = 0;
+        for (let i = 0; i < count; i++) {
+          const c = readU32(data, sttsPos + 16 + i * 8);
+          const d = readU32(data, sttsPos + 20 + i * 8);
+          sampleCount += c;
+          totalTicks += c * d;
+        }
+        if (totalTicks > 0 && timescale > 0) {
+          fps = (sampleCount * timescale) / totalTicks;
+        }
+      }
+    }
+
+    const isVertical = height > width && height >= 1080;
+    const isHorizontal = width > height;
+    const isHighFps = fps >= 55.0;
+
+    const warnings = [];
+    if (isHorizontal) {
+      warnings.push({
+        type: 'resolution',
+        title: `Horizontal/Landscape Video Detected (${width}x${height})`,
+        message: 'TikTok is a 9:16 vertical platform. Uploading horizontal videos causes TikTok to scale the width down to fit phone screens, demoting the video to 540p letterboxed! For full 1080p, export your video in CapCut / Premiere as 9:16 Vertical (1080x1920).'
+      });
+    } else if (width < 1080 && height < 1920) {
+      warnings.push({
+        type: 'resolution',
+        title: `Low Resolution (${width}x${height})`,
+        message: 'Your video resolution is below native 1080p (1080x1920). TikTok will stream it in 540p or 720p.'
+      });
+    }
+
+    if (!isHighFps) {
+      warnings.push({
+        type: 'fps',
+        title: `Standard Frame Rate (${fps.toFixed(1)} FPS)`,
+        message: 'Your video is 30 FPS. The 60/120 FPS smoothness trick requires your source video to be recorded or exported at 60 FPS (or 120 FPS). In your editor (CapCut / Premiere), export at 60 FPS.'
+      });
+    }
+
+    return {
+      width,
+      height,
+      fps: Number(fps.toFixed(2)),
+      durationSec: Number(durationSec.toFixed(2)),
+      sampleCount,
+      faststart,
+      isVertical,
+      isHorizontal,
+      isHighFps,
+      warnings
+    };
+  }
+
   // Export to window / worker or CommonJS
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { transformMp4, patchFps };
+    module.exports = { transformMp4, patchFps, inspectMp4 };
   } else if (typeof global !== 'undefined') {
-    global.TikTokQuality = { transformMp4, patchFps };
+    global.TikTokQuality = { transformMp4, patchFps, inspectMp4 };
   }
 })(typeof self !== 'undefined' ? self : this);

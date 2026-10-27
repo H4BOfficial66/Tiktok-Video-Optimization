@@ -361,6 +361,65 @@
       color: #ff4757;
     }
 
+    /* Video Diagnostic / Readiness Inspection Card */
+    .diagnostic-card {
+      background: rgba(18, 20, 29, 0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 16px;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .diagnostic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+    .diagnostic-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .diagnostic-title-wrap b {
+      display: block;
+      font-size: 14px;
+      color: #fff;
+    }
+    .diagnostic-title-wrap small {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .diag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .diag-item.warn {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+    }
+    .diag-item.ok {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+    }
+    .diag-item b {
+      display: block;
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
     /* Settings Form */
     .settings-grid {
       display: grid;
@@ -881,6 +940,21 @@
           <button class="btn-remove-file" id="btnRemoveFile" title="Remove file">&times;</button>
         </div>
 
+        <!-- Real-Time Video Health & TikTok Readiness Inspector -->
+        <div class="diagnostic-card" id="diagnosticCard" style="display: none;">
+          <div class="diagnostic-header">
+            <div class="diagnostic-header-left">
+              <span style="font-size: 20px;">🔍</span>
+              <div class="diagnostic-title-wrap">
+                <b id="diagSummaryTitle">TikTok Video Health & Readiness Inspection</b>
+                <small id="diagSummarySub">Analyzing resolution, aspect ratio, and frame rate...</small>
+              </div>
+            </div>
+            <span class="mode-badge" id="diagStatusBadge">Analyzing</span>
+          </div>
+          <div class="diagnostic-body" id="diagnosticBody"></div>
+        </div>
+
         <!-- Mode Specific Settings: 7-u8 FPS Patch -->
         <div id="sectionPatchSettings">
           <div class="settings-grid">
@@ -1166,7 +1240,7 @@
       }
 
       // Handle File Selection
-      function handleFile(file) {
+      async function handleFile(file) {
         if (!file) return;
         if (!file.name.toLowerCase().endsWith('.mp4')) {
           showAlert('Please select a valid .mp4 video file (H.264/AVC).', 'err');
@@ -1180,6 +1254,88 @@
         $('btnTransform').disabled = false;
         $('resultsContainer').classList.remove('visible');
         hideAlert();
+
+        // Run client-side instant diagnostic
+        try {
+          // Try reading first 5MB or full file if under 15MB
+          const sliceBytes = file.size > 15 * 1024 * 1024 ? 5 * 1024 * 1024 : file.size;
+          let buf = await file.slice(0, sliceBytes).arrayBuffer();
+          try {
+            const info = TikTokQuality.inspectMp4(new Uint8Array(buf));
+            renderDiagnostics(info);
+          } catch (e) {
+            // If moov is at end of file (non-faststart), read full buffer
+            buf = await file.arrayBuffer();
+            const info = TikTokQuality.inspectMp4(new Uint8Array(buf));
+            renderDiagnostics(info);
+          }
+        } catch (err) {
+          console.warn('Diagnostics warning:', err);
+        }
+      }
+
+      function renderDiagnostics(info) {
+        const card = $('diagnosticCard');
+        const body = $('diagnosticBody');
+        const badge = $('diagStatusBadge');
+        body.innerHTML = '';
+
+        if (!info.warnings || info.warnings.length === 0) {
+          badge.textContent = '1080p60 Ready';
+          badge.style.background = 'rgba(16, 185, 129, 0.2)';
+          badge.style.color = '#34d399';
+          body.innerHTML = `
+            <div class="diag-item ok">
+              <span style="font-size: 18px;">✅</span>
+              <div>
+                <b>Perfect TikTok Format:</b> ${info.width}x${info.height} (${info.fps} FPS). Vertical 9:16 layout detected. Container is ready for 1080p60!
+              </div>
+            </div>
+          `;
+        } else {
+          badge.textContent = 'Action Required';
+          badge.style.background = 'rgba(245, 158, 11, 0.2)';
+          badge.style.color = '#fbbf24';
+
+          info.warnings.forEach(w => {
+            const item = document.createElement('div');
+            item.className = 'diag-item warn';
+            item.innerHTML = `
+              <span style="font-size: 16px;">⚠️</span>
+              <div>
+                <b>${w.title}</b>
+                ${w.message}
+              </div>
+            `;
+            body.appendChild(item);
+          });
+
+          // Auto-select detected FPS in dropdown
+          if (info.fps) {
+            const sel = $('selectSourceFps');
+            if (info.fps >= 57 && info.fps <= 63) {
+              sel.value = '60';
+            } else if (info.fps >= 115) {
+              sel.value = '120';
+            } else if (info.fps >= 27 && info.fps <= 33) {
+              sel.value = '30';
+            }
+          }
+        }
+
+        // Add upload guidelines
+        const tip = document.createElement('div');
+        tip.style.fontSize = '12px';
+        tip.style.color = 'var(--text-muted)';
+        tip.style.marginTop = '10px';
+        tip.style.borderTop = '1px solid rgba(255,255,255,0.06)';
+        tip.style.paddingTop = '8px';
+        tip.innerHTML = `
+          💡 <b>TikTok Upload Rules:</b> Turn ON <b>"Allow high-quality uploads"</b> on post screen &bull; Turn OFF <b>"Data Saver"</b> in TikTok Settings &bull; Wait 10 mins after posting for HD CDN transcode.
+        `;
+        body.appendChild(tip);
+
+        card.style.display = 'block';
       }
 
       // Drag & Drop
@@ -1220,6 +1376,7 @@
         selectedFile = null;
         fileInput.value = '';
         $('fileBadge').classList.remove('visible');
+        $('diagnosticCard').style.display = 'none';
         $('btnTransform').disabled = true;
         $('resultsContainer').classList.remove('visible');
         hideAlert();
