@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TikTok Quality – 1080p60 MP4 Container Tool</title>
+<style>
+:root{--bg:#07070a;--panel:#101014;--line:#2a1216;--red:#ff1f3d;--red2:#b3122a;--txt:#f4f4f6;--mut:#9a9aa6;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(900px 420px at 50% -120px,#3a0a14 0%,transparent 70%),var(--bg);color:var(--txt);font:16px/1.55 ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:40px 18px 64px}
+h1{font-size:clamp(28px,6vw,44px);letter-spacing:.04em;margin:0 0 6px;text-transform:uppercase}
+h1 span{color:var(--red);text-shadow:0 0 18px rgba(255,31,61,.55)}
+.sub{color:var(--mut);margin:0 0 28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px;box-shadow:0 0 0 1px rgba(255,31,61,.04),0 8px 30px rgba(0,0,0,.5)}
+#drop{border:2px dashed var(--red2);border-radius:10px;padding:38px 16px;text-align:center;cursor:pointer;transition:.15s}
+#drop:hover,#drop.on{background:rgba(255,31,61,.07);border-color:var(--red)}
+#drop b{color:var(--red)}
+#drop small{display:block;color:var(--mut);margin-top:6px}
+input[type=file]{display:none}
+label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.08em}
+input[type=number],input[type=text]{width:100%;background:#0a0a0d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:10px 12px;font:inherit}
+input:focus{outline:1px solid var(--red)}
+.row{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+button,.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:6px;padding:12px 22px;font:inherit;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;margin-top:18px}
+button:hover,.btn:hover{background:#ff4560;box-shadow:0 0 18px rgba(255,31,61,.5)}
+button:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+#file{margin-top:14px;color:var(--mut);word-break:break-all}
+#msg{margin-top:14px;min-height:1.4em}
+.err{color:#ff6b7f}.ok{color:#6dffb0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stats div{background:#0a0a0d;border:1px solid var(--line);border-radius:6px;padding:10px}
+.stats i{display:block;font-style:normal;font-size:12px;color:var(--mut);text-transform:uppercase}
+.stats b{font-size:18px}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin:0 0 10px}
+ol{margin:0;padding-left:20px;color:var(--mut)}li{margin:4px 0}
+.note{color:var(--mut);font-size:13px}
+footer{color:var(--mut);font-size:12px;text-align:center;margin-top:28px}
+footer a{color:var(--red)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TikTok <span>Quality</span></h1>
+  <p class="sub">Upload 1080p 60fps without re-encoding. Pure MP4 container metadata change – processed on our server and deleted right after download.</p>
+
+  <div class="card">
+    <div id="drop" tabindex="0"><b>Click to choose</b> or drop an MP4 here<small>H.264 / AVC video only (.mp4)</small></div>
+    <input id="inp" type="file" accept="video/mp4,.mp4">
+    <div id="file"></div>
+    <div class="row">
+      <div><label for="mul">Multiplier</label><input id="mul" type="number" min="2" max="50" value="10"></div>
+      <div><label for="cmt">Metadata comment tag</label><input id="cmt" type="text" value="TK8vY5VqBA6hUlo1yuGvNA"></div>
+    </div>
+    <button id="go" disabled>Transform</button>
+    <div id="msg"></div>
+    <div id="res" class="hide">
+      <div class="stats" id="stats"></div>
+      <a id="dl" class="btn" download="output.mp4">Download output.mp4</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <ol>
+      <li>Your MP4 is uploaded to the server and processed by the Python tool. Files are deleted right after.</li>
+      <li>The container is rewritten: fast-start layout, first-frame SEI stripped, avcC / bitrate boxes patched.</li>
+      <li>“Ghost frames” are appended to the video tables – all pointing at one 8-byte filler block.</li>
+      <li>No pixel changes, no re-encoding. File grows only by the metadata tables (~100&nbsp;KB for 1 minute at 60fps).</li>
+    </ol>
+    <p class="note">Platforms can change their upload checks at any time, so results are not guaranteed. Max upload size is set by the server (default 500&nbsp;MB).</p>
+  </div>
+
+  <footer>Based on <a href="https://github.com/BastienGimbert/tiktok-quality" target="_blank" rel="noopener">tiktok-quality</a> by Bastien Gimbert (MIT License).</footer>
+</div>
+
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  let file=null,url=null;
+  const mb=b=>(b/1048576).toFixed(1)+' MB';
+  const pick=f=>{
+    if(!f)return;file=f;$('file').textContent=f.name+' ('+mb(f.size)+')';
+    $('go').disabled=false;$('res').classList.add('hide');$('msg').textContent='';
+  };
+  $('drop').onclick=()=>$('inp').click();
+  $('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')$('inp').click()};
+  $('inp').onchange=e=>pick(e.target.files[0]);
+  ['dragover','dragenter'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('on')}));
+  ['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('on')}));
+  $('drop').addEventListener('drop',e=>pick(e.dataTransfer.files[0]));
+  const fail=m=>{$('msg').className='err';$('msg').textContent='Error: '+m;$('go').disabled=false};
+  $('go').onclick=()=>{
+    const msg=$('msg');msg.className='';msg.textContent='Uploading… 0%';$('go').disabled=true;$('res').classList.add('hide');
+    const fd=new FormData();
+    fd.append('file',file);fd.append('multiplier',$('mul').value||10);
+    fd.append('comment',$('cmt').value||'TK8vY5VqBA6hUlo1yuGvNA');
+    const x=new XMLHttpRequest();x.open('POST','/api/transform');x.responseType='blob';
+    x.upload.onprogress=e=>{if(e.lengthComputable){const p=Math.round(e.loaded/e.total*100);msg.textContent=p<100?'Uploading… '+p+'%':'Processing on server…'}};
+    x.onerror=()=>fail('network error – is the server running?');
+    x.onload=async()=>{
+      if(x.status!==200){
+        let m='server error ('+x.status+')';
+        try{const d=JSON.parse(await x.response.text()).detail;if(typeof d==='string')m=d}catch(e){}
+        return fail(m);
+      }
+      const s=JSON.parse(x.getResponseHeader('X-Stats'));
+      if(url)URL.revokeObjectURL(url);
+      url=URL.createObjectURL(x.response);
+      $('dl').href=url;$('dl').download=file.name.replace(/\.mp4$/i,'')+'_tq.mp4';
+      $('stats').innerHTML=[['Real frames',s.original_frames],['Declared frames',s.declared_frames],['Multiplier','x'+s.multiplier],['Size change','+'+(s.size_delta/1024).toFixed(0)+' KB'],['Output',mb(s.output_size)]].map(a=>'<div><i>'+a[0]+'</i><b>'+a[1]+'</b></div>').join('');
+      $('res').classList.remove('hide');msg.className='ok';msg.textContent='Done – no re-encoding, container only.';
+      $('go').disabled=false;
+    };
+    x.send(fd);
+  };
+})();
+</script>
+</body>
+</html>
