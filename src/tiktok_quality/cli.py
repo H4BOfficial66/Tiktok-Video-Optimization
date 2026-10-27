@@ -35,10 +35,10 @@ Examples:
     )
     parser.add_argument('input', nargs='?', help='Input MP4 file (H.264/AVC)')
     parser.add_argument('output', nargs='?', help='Output MP4 file path')
-    parser.add_argument('-m', '--multiplier', type=int, default=1,
-                        help='Frame multiplier (1 = Safe Mode / Public Safe, 2-10 = Frame inflation trigger) (default: 1)')
-    parser.add_argument('-c', '--comment', type=str, default='',
-                        help='Optional metadata bypass tag (default: empty for maximum public safety / anti-shadowban)')
+    parser.add_argument('-m', '--multiplier', type=int, default=10,
+                        help='Frame multiplier for 1080p60 trigger (default: 10)')
+    parser.add_argument('-c', '--comment', type=str, default='TK8vY5VqBA6hUlo1yuGvNA',
+                        help='Metadata bypass signature tag (default: TK8vY5VqBA6hUlo1yuGvNA)')
     parser.add_argument('--verify', metavar='FILE',
                         help='Verify a file with ffprobe (no transformation)')
     parser.add_argument('--compare', nargs=2, metavar=('FILE', 'REFERENCE'),

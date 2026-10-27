@@ -18,7 +18,7 @@ from tiktok_quality import transform
 
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "500"))      # per-file limit
 MAX_CONCURRENT_JOBS = int(os.getenv("MAX_CONCURRENT_JOBS", "2"))  # RAM protection
-DEFAULT_COMMENT = ""
+DEFAULT_COMMENT = "TK8vY5VqBA6hUlo1yuGvNA"
 
 app = FastAPI(title="TikTok Quality", docs_url=None, redoc_url=None)
 jobs = asyncio.Semaphore(MAX_CONCURRENT_JOBS)
@@ -45,14 +45,14 @@ def health():
 @app.post("/api/transform")
 async def api_transform(
     file: UploadFile = File(...),
-    multiplier: int = Form(1),
+    multiplier: int = Form(10),
     comment: str = Form(DEFAULT_COMMENT),
 ):
     name = file.filename or "video.mp4"
     if not name.lower().endswith(".mp4"):
         raise HTTPException(400, "Only .mp4 files are supported.")
     multiplier = max(1, min(50, multiplier))
-    comment = comment.strip()[:64]
+    comment = (comment.strip() or DEFAULT_COMMENT)[:64]
 
     workdir = tempfile.mkdtemp(prefix="tq_")
     src, dst = Path(workdir) / "in.mp4", Path(workdir) / "out.mp4"
