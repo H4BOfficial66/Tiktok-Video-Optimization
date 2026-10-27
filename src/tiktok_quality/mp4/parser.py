@@ -110,6 +110,15 @@ def parse_stco(data: bytes, offset: int) -> List[int]:
     return [read_u32(data, offset + 16 + i * 4) for i in range(entry_count)]
 
 
+def parse_co64(data: bytes, offset: int) -> List[int]:
+    """Parse 64-bit chunk offset box. Returns list of chunk offsets."""
+    entry_count = read_u32(data, offset + 12)
+    return [
+        struct.unpack('>Q', data[offset + 16 + i * 8:offset + 24 + i * 8])[0]
+        for i in range(entry_count)
+    ]
+
+
 def parse_nalu_list(sample_data: bytes) -> List[Tuple[int, int, bytes]]:
     """
     Parse NALUs in an AVC sample (4-byte length-prefixed).

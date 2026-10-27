@@ -51,7 +51,7 @@ async def api_transform(
     name = file.filename or "video.mp4"
     if not name.lower().endswith(".mp4"):
         raise HTTPException(400, "Only .mp4 files are supported.")
-    multiplier = max(2, min(50, multiplier))
+    multiplier = max(1, min(50, multiplier))
     comment = (comment.strip() or DEFAULT_COMMENT)[:64]
 
     workdir = tempfile.mkdtemp(prefix="tq_")

@@ -85,9 +85,9 @@ def build_stsd_video(fixed_fields: bytes, avcc: bytes, colr: bytes, pasp: bytes,
 
 
 def build_avcc(original_content: bytes, add_high_ext: bool = True) -> bytes:
-    """Build avcC box, optionally adding High profile extension."""
+    """Build avcC box, optionally adding High profile extension if not already present."""
     content = original_content
-    if add_high_ext:
+    if add_high_ext and not original_content.endswith(b'\xfd\xf8\xf8\x00'):
         content += b'\xfd\xf8\xf8\x00'
     return build_box('avcC', content)
 

@@ -54,11 +54,11 @@ tiktok-quality --check-deps
 ### CLI
 
 ```bash
-# Transform a video (10x frame inflation)
+# Transform a video (1080p60 container optimization)
 tiktok-quality input.mp4 output.mp4
 
 # Custom multiplier
-tiktok-quality input.mp4 output.mp4 -m 15
+tiktok-quality input.mp4 output.mp4 -m 10
 
 # Custom metadata tag
 tiktok-quality input.mp4 output.mp4 --comment "MyTag123"
@@ -83,7 +83,7 @@ tiktok-quality --compare output.mp4 reference.mp4
 from tiktok_quality import transform
 
 stats = transform("input.mp4", "output.mp4", multiplier=10)
-print(f"Declared frames: {stats['declared_frames']}")
+print(f"Declared frames: {stats['declared_frames']}, Duration: {stats['duration_sec']}s")
 ```
 
 ## How It Works

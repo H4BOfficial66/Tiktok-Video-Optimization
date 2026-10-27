@@ -16,7 +16,7 @@
 
   const PADDING_NAL = new Uint8Array([0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00]);
   const PADDING_SIZE = 8;
-  const KEEP_NALU_TYPES = new Set([1, 5]); // 1: non-IDR slice, 5: IDR slice
+  const KEEP_NALU_TYPES = new Set([1, 5, 7, 8]); // 1: non-IDR slice, 5: IDR slice, 7: SPS, 8: PPS
   const LANG_UND = 0x55c4; // ISO 639-2/T packed 'und'
 
   function readU32(bytes, offset) {
@@ -189,6 +189,16 @@
     return offsets;
   }
 
+  function parseCo64(data, offset) {
+    const entryCount = readU32(data, offset + 12);
+    const offsets = [];
+    for (let i = 0; i < entryCount; i++) {
+      // Lower 32-bit word represents chunk offset for files < 4GB
+      offsets.push(readU32(data, offset + 20 + i * 8));
+    }
+    return offsets;
+  }
+
   function parseNaluList(sampleData) {
     const nalus = [];
     let pos = 0;
@@ -311,7 +321,14 @@
 
   function buildAvcc(originalContent, addHighExt = true) {
     let content = originalContent;
-    if (addHighExt) {
+    const len = originalContent.length;
+    const alreadyHasExt = len >= 4 &&
+      originalContent[len - 4] === 0xfd &&
+      originalContent[len - 3] === 0xf8 &&
+      originalContent[len - 2] === 0xf8 &&
+      originalContent[len - 1] === 0x00;
+
+    if (addHighExt && !alreadyHasExt) {
       content = concatBytes(originalContent, new Uint8Array([0xfd, 0xf8, 0xf8, 0x00]));
     }
     return buildBox('avcC', content);
@@ -379,15 +396,15 @@
    * Transforms an MP4 video container according to TikTok quality optimization rules.
    * @param {Uint8Array|ArrayBuffer} inputData - MP4 file buffer.
    * @param {Object} [options]
-   * @param {number} [options.multiplier=10] - Ghost frame multiplier (2 to 50).
-   * @param {string} [options.comment='TK8vY5VqBA6hUlo1yuGvNA'] - Metadata comment tag.
+   * @param {number} [options.multiplier=1] - Multiplier. 1 = Safe mode (exact duration, no shadowban). >1 = Frame inflation.
+   * @param {string} [options.comment=''] - Metadata comment tag (default empty to avoid moderation flags).
    * @param {function} [options.onProgress] - Optional progress callback: (percent: number, step: string) => void.
    * @returns {{ output: Uint8Array, stats: Object }}
    */
   function transformMp4(inputData, options = {}) {
     const data = inputData instanceof Uint8Array ? inputData : new Uint8Array(inputData);
-    const multiplier = Math.max(2, Math.min(50, options.multiplier || 10));
-    const comment = (options.comment || 'TK8vY5VqBA6hUlo1yuGvNA').slice(0, 64);
+    const multiplier = Math.max(1, Math.min(50, options.multiplier !== undefined ? options.multiplier : 10));
+    const comment = (options.comment !== undefined ? options.comment : 'TK8vY5VqBA6hUlo1yuGvNA').slice(0, 64);
     const onProgress = options.onProgress || (() => {});
     const fileSize = data.length;
 
@@ -417,6 +434,7 @@
     const sbEnd = stblPos + stblSize;
 
     const [stcoPos] = findBox(data, 'stco', sbStart, sbEnd);
+    const [co64Pos] = stcoPos === null ? findBox(data, 'co64', sbStart, sbEnd) : [null];
     const [stszPos] = findBox(data, 'stsz', sbStart, sbEnd);
     const [stscPos] = findBox(data, 'stsc', sbStart, sbEnd);
     const [sttsPos] = findBox(data, 'stts', sbStart, sbEnd);
@@ -425,24 +443,31 @@
     const [sdtpPos, sdtpSize] = findBox(data, 'sdtp', sbStart, sbEnd);
     const [cttsPos, cttsSize] = findBox(data, 'ctts', sbStart, sbEnd);
 
-    if (!stcoPos || !stszPos || !stscPos || !sttsPos || !stsdPos) {
-      throw new Error('Invalid MP4: missing critical sample tables.');
+    if ((stcoPos === null && co64Pos === null) || !stszPos || !stscPos || !sttsPos || !stsdPos) {
+      throw new Error('Invalid MP4: missing critical sample tables in video track.');
     }
 
-    const videoChunks = parseStco(data, stcoPos);
+    const videoChunks = stcoPos !== null ? parseStco(data, stcoPos) : parseCo64(data, co64Pos);
     const videoSizes = parseStsz(data, stszPos);
     const videoStsc = parseStsc(data, stscPos);
     const videoStts = parseStts(data, sttsPos);
 
+    if (!videoChunks.length || !videoSizes.length || !videoStts.length) {
+      throw new Error('Invalid MP4: video stream contains 0 frames or empty sample tables.');
+    }
+
     const origFrames = videoSizes.length;
     const timeDelta = videoStts[0][1];
-    const padCount = origFrames * (multiplier - 1);
+    const padCount = multiplier > 1 ? origFrames * (multiplier - 1) : 0;
     const totalFrames = origFrames + padCount;
 
     const [vMdhdPos, vMdhdSize] = findBoxPath(data, ['mdia', 'mdhd'], vtStart, vtEnd);
+    if (vMdhdPos === null) {
+      throw new Error('Invalid MP4: missing video media header (mdhd).');
+    }
     const vTimescale = readU32(data, vMdhdPos + 20);
     const vDuration = readU32(data, vMdhdPos + 24);
-    const vDurationSec = vDuration / vTimescale;
+    const vDurationSec = vTimescale > 0 ? (vDuration / vTimescale) : 0;
 
     onProgress(35, 'Cleaning SEI metadata from first frame...');
     const firstOff = videoChunks[0];
@@ -476,6 +501,7 @@
       const aSbEnd = aStblPos + aStblSize;
 
       const [aStcoPos] = findBox(data, 'stco', aSbStart, aSbEnd);
+      const [aCo64Pos] = aStcoPos === null ? findBox(data, 'co64', aSbStart, aSbEnd) : [null];
       [aStszPos, aStszSize] = findBox(data, 'stsz', aSbStart, aSbEnd);
       [aStscPos, aStscSize] = findBox(data, 'stsc', aSbStart, aSbEnd);
       const [aSttsPos] = findBox(data, 'stts', aSbStart, aSbEnd);
@@ -483,9 +509,13 @@
       [aSgpdPos, aSgpdSize] = findBox(data, 'sgpd', aSbStart, aSbEnd);
       [aSbgpPos, aSbgpSize] = findBox(data, 'sbgp', aSbStart, aSbEnd);
 
-      audioChunks = parseStco(data, aStcoPos);
-      audioSizes = parseStsz(data, aStszPos);
-      audioStts = parseStts(data, aSttsPos);
+      if ((aStcoPos === null && aCo64Pos === null) || !aStszPos || !aSttsPos || !aStsdPos) {
+        hasAudio = false;
+      } else {
+        audioChunks = aStcoPos !== null ? parseStco(data, aStcoPos) : parseCo64(data, aCo64Pos);
+        audioSizes = parseStsz(data, aStszPos);
+        audioStts = parseStts(data, aSttsPos);
+      }
 
       [aMdhdPos, aMdhdSize] = findBoxPath(data, ['mdia', 'mdhd'], atStart, atEnd);
       aTimescale = readU32(data, aMdhdPos + 20);
@@ -497,21 +527,26 @@
         aElstMediaTime = readU32(data, aElstPos + 20);
       }
 
-      newAudioDurMs = aElstSegDur;
-      newAudioDur = Math.floor((newAudioDurMs * aTimescale) / 1000);
+      if (aElstPos !== null && aElstSegDur > 0) {
+        newAudioDurMs = aElstSegDur;
+      } else {
+        const aMdhdDur = readU32(data, aMdhdPos + 24);
+        newAudioDurMs = aTimescale > 0 ? Math.floor((aMdhdDur * 1000) / aTimescale) : 0;
+      }
+      newAudioDur = aTimescale > 0 ? Math.floor((newAudioDurMs * aTimescale) / 1000) : 0;
 
-      const aDelta = audioStts[0][1];
+      const aDelta = audioStts.length ? audioStts[0][1] : 1024;
       const aCount = audioSizes.length;
       const targetStts = newAudioDur + aElstMediaTime;
       const mainN = aCount - 1;
       const lastDelta = targetStts - mainN * aDelta;
 
-      if (lastDelta > 0 && lastDelta <= aDelta) {
+      if (mainN > 0 && lastDelta > 0 && lastDelta <= aDelta) {
         newAStts = [[mainN, aDelta], [1, lastDelta]];
       } else {
         newAStts = audioStts;
         newAudioDur = readU32(data, aMdhdPos + 24);
-        newAudioDurMs = Math.floor((newAudioDur * 1000) / aTimescale);
+        newAudioDurMs = aTimescale > 0 ? Math.floor((newAudioDur * 1000) / aTimescale) : 0;
       }
 
       let totalABytes = 0;
@@ -521,14 +556,15 @@
       let newATicks = 0;
       for (let [c, d] of newAStts) newATicks += c * d;
 
-      oldABr = Math.floor((totalABytes * 8 * aTimescale) / oldATicks);
-      newABr = Math.floor((totalABytes * 8 * aTimescale) / newATicks);
+      oldABr = oldATicks > 0 ? Math.floor((totalABytes * 8 * aTimescale) / oldATicks) : 128000;
+      newABr = newATicks > 0 ? Math.floor((totalABytes * 8 * aTimescale) / newATicks) : 128000;
     }
-
     onProgress(60, 'Rebuilding media data (mdat)...');
     const mdatBefore = data.subarray(mdatDataStart, firstOff);
     const mdatAfter = data.subarray(firstOff + firstSize, mdatPos + mdatSize);
-    const newMdatContent = concatBytes(mdatBefore, newFirst, mdatAfter, PADDING_NAL);
+    const newMdatContent = padCount > 0
+      ? concatBytes(mdatBefore, newFirst, mdatAfter, PADDING_NAL)
+      : concatBytes(mdatBefore, newFirst, mdatAfter);
     const newMdatHeader = new Uint8Array(8);
     writeU32(newMdatHeader, 0, 8 + newMdatContent.length);
     newMdatHeader.set(strToBytes('mdat'), 4);
@@ -548,7 +584,17 @@
     const vTkhdSize = readU32(data, vtStart);
     const videoTkhd = data.subarray(vtStart, vtStart + vTkhdSize);
     const [edtsPos, edtsSize] = findBox(data, 'edts', vtStart, vtEnd);
-    const videoEdts = edtsPos ? data.subarray(edtsPos, edtsPos + edtsSize) : new Uint8Array(0);
+    let videoEdts = edtsPos ? data.subarray(edtsPos, edtsPos + edtsSize) : new Uint8Array(0);
+    if (videoEdts.length === 0 && vTkhdDurMs > 0) {
+      const elstContent = new Uint8Array(20);
+      writeU32(elstContent, 0, 0);
+      writeU32(elstContent, 4, 1);
+      writeU32(elstContent, 8, vTkhdDurMs);
+      writeU32(elstContent, 12, 0);
+      writeU16(elstContent, 16, 1);
+      writeU16(elstContent, 18, 0);
+      videoEdts = buildBox('edts', buildBox('elst', elstContent));
+    }
     const videoMdhd = data.subarray(vMdhdPos, vMdhdPos + vMdhdSize);
     const [vHdlrPos, vHdlrSize] = findBoxPath(data, ['mdia', 'hdlr'], vtStart, vtEnd);
     const videoHdlr = data.subarray(vHdlrPos, vHdlrPos + vHdlrSize);
@@ -564,17 +610,18 @@
     const avccRel = findSubarray(stsdContent, avccNeedle);
     const avccStart = avccRel - 4;
     const avccOrigSize = readU32(stsdContent, avccStart);
+    const avccEnd = avccStart + avccOrigSize;
     const avccNew = buildAvcc(stsdContent.subarray(avccStart + 8, avccStart + avccOrigSize));
 
     let colrBox = new Uint8Array(0);
-    const colrRel = findSubarray(stsdContent, strToBytes('colr'));
+    const colrRel = findSubarray(stsdContent, strToBytes('colr'), avccEnd);
     if (colrRel >= 0) {
       const cs = colrRel - 4;
       colrBox = stsdContent.subarray(cs, cs + readU32(stsdContent, cs));
     }
 
     let paspBox = new Uint8Array(0);
-    const paspRel = findSubarray(stsdContent, strToBytes('pasp'));
+    const paspRel = findSubarray(stsdContent, strToBytes('pasp'), avccEnd);
     if (paspRel >= 0) {
       const ps = paspRel - 4;
       paspBox = stsdContent.subarray(ps, ps + readU32(stsdContent, ps));
@@ -583,25 +630,35 @@
     let totalVBytes = 0;
     for (let s of videoSizes) totalVBytes += s;
     totalVBytes = totalVBytes - firstSize + newFirstSize;
-    const newVAvgBr = Math.floor((totalVBytes * 8) / vDurationSec);
+    const newVAvgBr = vDurationSec > 0 ? Math.floor((totalVBytes * 8) / vDurationSec) : 10000000;
 
-    const btrtRel = findSubarray(stsdContent, strToBytes('btrt'));
+    const btrtRel = findSubarray(stsdContent, strToBytes('btrt'), avccEnd);
     const maxBr = btrtRel >= 0 ? readU32(stsdContent, btrtRel + 8) : newVAvgBr;
     const btrtNew = buildBtrt(0, maxBr, newVAvgBr);
 
     const videoStsdNew = buildStsdVideo(avc1Fixed, avccNew, colrBox, paspBox, btrtNew);
 
-    const videoSttsNew = buildStts([[origFrames, timeDelta], [padCount, timeDelta]]);
+    let videoSttsNew, videoStscNew, videoStszNew;
+    if (padCount > 0) {
+      // Ghost frames inherit native timeDelta so the container declared framerate
+      // remains exactly 60.0 fps (or 30.0 fps) — avoiding TikTok transcoder 540p downscale rejection.
+      // Playback duration remains clipped to exact original length via mvhd/tkhd/edts.
+      videoSttsNew = buildStts([...videoStts, [padCount, timeDelta]]);
+      videoStscNew = buildStsc([...videoStsc, [videoChunks.length + 1, 1, 1]]);
+      const newVideoSizes = [newFirstSize, ...videoSizes.slice(1)];
+      for (let i = 0; i < padCount; i++) {
+        newVideoSizes.push(PADDING_SIZE);
+      }
+      videoStszNew = buildStsz(newVideoSizes);
+    } else {
+      videoSttsNew = buildStts(videoStts);
+      videoStscNew = buildStsc(videoStsc);
+      videoStszNew = buildStsz([newFirstSize, ...videoSizes.slice(1)]);
+    }
+
     const videoStss = stssPos ? data.subarray(stssPos, stssPos + stssSize) : new Uint8Array(0);
     const videoSdtp = sdtpPos ? data.subarray(sdtpPos, sdtpPos + sdtpSize) : new Uint8Array(0);
     const videoCtts = cttsPos ? data.subarray(cttsPos, cttsPos + cttsSize) : new Uint8Array(0);
-    const videoStscNew = buildStsc([...videoStsc, [videoChunks.length + 1, 1, 1]]);
-
-    const newVideoSizes = [newFirstSize, ...videoSizes.slice(1)];
-    for (let i = 0; i < padCount; i++) {
-      newVideoSizes.push(PADDING_SIZE);
-    }
-    const videoStszNew = buildStsz(newVideoSizes);
 
     const totalVChunks = videoChunks.length + padCount;
     const stcoPhSize = 16 + totalVChunks * 4;
@@ -637,17 +694,18 @@
       const audioDinf = data.subarray(aDinfPos, aDinfPos + aDinfSize);
 
       const audioStsd = new Uint8Array(data.subarray(aStsdPos, aStsdPos + aStsdSize));
-      const oldBrBytes = new Uint8Array(4);
-      const newBrBytes = new Uint8Array(4);
-      writeU32(oldBrBytes, 0, oldABr);
-      writeU32(newBrBytes, 0, newABr);
-
-      let p = 0;
-      while (true) {
-        const idx = findSubarray(audioStsd, oldBrBytes, p);
-        if (idx === -1) break;
-        audioStsd.set(newBrBytes, idx);
-        p = idx + 4;
+      if (oldABr > 0 && oldABr !== newABr) {
+        const oldBrBytes = new Uint8Array(4);
+        const newBrBytes = new Uint8Array(4);
+        writeU32(oldBrBytes, 0, oldABr);
+        writeU32(newBrBytes, 0, newABr);
+        let p = 0;
+        while (true) {
+          const idx = findSubarray(audioStsd, oldBrBytes, p);
+          if (idx === -1) break;
+          audioStsd.set(newBrBytes, idx);
+          p = idx + 4;
+        }
       }
 
       const audioSttsNew = buildStts(newAStts);
@@ -668,7 +726,7 @@
       audioTrak = buildBox('trak', concatBytes(audioTkhd, audioEdts, audioMdia));
     }
 
-    const udta = buildUdtaComment(comment);
+    const udta = (comment && comment.trim().length > 0) ? buildUdtaComment(comment.trim()) : new Uint8Array(0);
     let moov = buildBox('moov', concatBytes(mvhd, videoTrak, audioTrak, udta));
     const moovSizeFinal = moov.length;
 
@@ -682,8 +740,10 @@
       const rel = off - mdatDataStart;
       newVOffsets.push(rel <= firstVideoRel ? newMdatStart + rel : newMdatStart + rel - seiRemoved);
     }
-    for (let i = 0; i < padCount; i++) {
-      newVOffsets.push(padAbs);
+    if (padCount > 0) {
+      for (let i = 0; i < padCount; i++) {
+        newVOffsets.push(padAbs);
+      }
     }
 
     const newAOffsets = [];
@@ -713,16 +773,18 @@
       const audioDinf = data.subarray(aDinfPos, aDinfPos + aDinfSize);
 
       const audioStsd = new Uint8Array(data.subarray(aStsdPos, aStsdPos + aStsdSize));
-      const oldBrBytes = new Uint8Array(4);
-      const newBrBytes = new Uint8Array(4);
-      writeU32(oldBrBytes, 0, oldABr);
-      writeU32(newBrBytes, 0, newABr);
-      let p = 0;
-      while (true) {
-        const idx = findSubarray(audioStsd, oldBrBytes, p);
-        if (idx === -1) break;
-        audioStsd.set(newBrBytes, idx);
-        p = idx + 4;
+      if (oldABr > 0 && oldABr !== newABr) {
+        const oldBrBytes = new Uint8Array(4);
+        const newBrBytes = new Uint8Array(4);
+        writeU32(oldBrBytes, 0, oldABr);
+        writeU32(newBrBytes, 0, newABr);
+        let p = 0;
+        while (true) {
+          const idx = findSubarray(audioStsd, oldBrBytes, p);
+          if (idx === -1) break;
+          audioStsd.set(newBrBytes, idx);
+          p = idx + 4;
+        }
       }
 
       const audioSttsNew = buildStts(newAStts);
@@ -755,7 +817,8 @@
         original_frames: origFrames,
         declared_frames: totalFrames,
         ghost_frames: padCount,
-        multiplier: multiplier
+        multiplier: multiplier,
+        duration_sec: Number(vDurationSec.toFixed(2))
       }
     };
   }

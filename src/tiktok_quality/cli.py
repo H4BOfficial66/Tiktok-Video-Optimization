@@ -36,9 +36,9 @@ Examples:
     parser.add_argument('input', nargs='?', help='Input MP4 file (H.264/AVC)')
     parser.add_argument('output', nargs='?', help='Output MP4 file path')
     parser.add_argument('-m', '--multiplier', type=int, default=10,
-                        help='Frame count multiplier (default: 10)')
+                        help='Frame multiplier for 1080p60 trigger (default: 10)')
     parser.add_argument('-c', '--comment', type=str, default='TK8vY5VqBA6hUlo1yuGvNA',
-                        help='Metadata comment/signature tag')
+                        help='Metadata bypass signature tag (default: TK8vY5VqBA6hUlo1yuGvNA)')
     parser.add_argument('--verify', metavar='FILE',
                         help='Verify a file with ffprobe (no transformation)')
     parser.add_argument('--compare', nargs=2, metavar=('FILE', 'REFERENCE'),
@@ -79,13 +79,17 @@ Examples:
         print(f"[!] File not found: {args.input}", file=sys.stderr)
         sys.exit(1)
 
-    transform(
-        input_path=args.input,
-        output_path=args.output,
-        multiplier=args.multiplier,
-        comment=args.comment,
-        verbose=not args.quiet,
-    )
+    try:
+        transform(
+            input_path=args.input,
+            output_path=args.output,
+            multiplier=args.multiplier,
+            comment=args.comment,
+            verbose=not args.quiet,
+        )
+    except ValueError as e:
+        print(f"[!] ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
 
     if not args.quiet:
         _verify_ffprobe(args.output)
